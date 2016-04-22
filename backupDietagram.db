@@ -1,0 +1,21 @@
+{
+ "kind": "storage#object",
+ "id": "bulatyauheni/backupDietagram.db/1458508086598000",
+ "selfLink": "https://www.googleapis.com/storage/v1/b/bulatyauheni/o/backupDietagram.db",
+ "name": "backupDietagram.db",
+ "bucket": "bulatyauheni",
+ "generation": "1458508086598000",
+ "metageneration": "1",
+ "timeCreated": "2016-03-20T21:08:06.596Z",
+ "updated": "2016-03-20T21:08:06.596Z",
+ "storageClass": "STANDARD",
+ "size": "925696",
+ "md5Hash": "pAz0eV/dApIjQcLjXsCbsA==",
+ "mediaLink": "https://www.googleapis.com/download/storage/v1/b/bulatyauheni/o/backupDietagram.db?generation=1458508086598000&alt=media",
+ "owner": {
+  "entity": "user-00b4903a97afd1e3dba3901520f705ae981e0ddac40cb6c75d085ac1390e3bc1",
+  "entityId": "00b4903a97afd1e3dba3901520f705ae981e0ddac40cb6c75d085ac1390e3bc1"
+ },
+ "crc32c": "oZzFFw==",
+ "etag": "CPCynYOW0MsCEAE="
+}
