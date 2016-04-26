@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -271,47 +272,55 @@ public class AddTodayDishActivity extends BaseActivity {
 		// set weight
 		weightView.addTextChangedListener(searchEditTextWatcher);
 		weightView.setOnEditorActionListener(onEditListener);
-		weightView.setText(String.valueOf(weight));
+		if (!edit && weight == 0) {
+			weightView.setText("");
+		} else {
+			weightView.setText(String.valueOf(weight));
+		}
 		// Request focus and show soft keyboard automatically
 		weightView.requestFocus();
 		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
- 
+		String dishWeight = weightView.getText().toString();
 		// set caloriity
-		dishCaloricityVTW.setText(String.valueOf(dc
-				* Integer.valueOf(weightView.getText().toString()) / 100));
-		DecimalFormat df = new DecimalFormat("###.#");
-		try {
-			if (fatValue != null && fatValue.length() > 0) {
-				dishFatVTW
-						.setText(df.format(Float.valueOf(fatValue.trim()
-								.replace(',', '.'))
-								* Float.valueOf(weightView.getText().toString())
-								/ 100));
-			} else {
-				dishCarbonVTW.setText(df.format(0));
+		if (!TextUtils.isEmpty(dishWeight)) {
+			dishCaloricityVTW.setText(String.valueOf(dc
+				* Integer.valueOf(dishWeight) / 100));
+		
+			DecimalFormat df = new DecimalFormat("###.#");
+			try {
+				if (fatValue != null && fatValue.length() > 0) {
+					dishFatVTW
+							.setText(df.format(Float.valueOf(fatValue.trim()
+									.replace(',', '.'))
+									* Float.valueOf(dishWeight)
+									/ 100));
+				} else {
+					dishCarbonVTW.setText(df.format(0));
+				}
+				if (carbonValue != null && carbonValue.length() > 0) {
+					dishCarbonVTW
+							.setText(df.format(Float.valueOf(carbonValue.trim()
+									.replace(',', '.'))
+									* Float.valueOf(dishWeight)
+									/ 100));
+				} else {
+					dishCarbonVTW.setText(df.format(0));
+				}
+				if (proteinValue != null && proteinValue.length() > 0) {
+	
+					dishProteinVTW
+							.setText(df.format(Float.valueOf(proteinValue.trim()
+									.replace(',', '.'))
+									* Float.valueOf(dishWeight)
+									/ 100));
+				} else {
+					dishCarbonVTW.setText(df.format(0));
+				}
+				
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			if (carbonValue != null && carbonValue.length() > 0) {
-				dishCarbonVTW
-						.setText(df.format(Float.valueOf(carbonValue.trim()
-								.replace(',', '.'))
-								* Float.valueOf(weightView.getText().toString())
-								/ 100));
-			} else {
-				dishCarbonVTW.setText(df.format(0));
-			}
-			if (proteinValue != null && proteinValue.length() > 0) {
-
-				dishProteinVTW
-						.setText(df.format(Float.valueOf(proteinValue.trim()
-								.replace(',', '.'))
-								* Float.valueOf(weightView.getText().toString())
-								/ 100));
-			} else {
-				dishCarbonVTW.setText(df.format(0));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 		okbutton = (Button) viewToLoad.findViewById(R.id.buttonYes);
 		okbutton.setOnClickListener(new OnClickListener() {
