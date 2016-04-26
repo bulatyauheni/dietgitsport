@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: F:\\dietagram\\sport_git\\src\\com\\android\\vending\\billing\\IInAppBillingService.aidl
+ * Original file: D:\\temp\\dgr\\src\\com\\android\\vending\\billing\\IInAppBillingService.aidl
  */
 package com.android.vending.billing;
 /**

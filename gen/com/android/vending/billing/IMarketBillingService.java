@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: F:\\dietagram\\sport_git\\src\\com\\android\\vending\\billing\\IMarketBillingService.aidl
+ * Original file: D:\\temp\\dgr\\src\\com\\android\\vending\\billing\\IMarketBillingService.aidl
  */
 package com.android.vending.billing;
 public interface IMarketBillingService extends android.os.IInterface
