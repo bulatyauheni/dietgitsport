@@ -12,6 +12,7 @@ import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager.BadTokenException;
 import android.widget.TextView;
 import bulat.diet.helper_sport.R;
 import bulat.diet.helper_sport.item.Inventory;
@@ -81,15 +82,23 @@ public class BasePayActivity extends Activity {
 
 	void complain(String message) {
 		Log.e(TAG, "**** TrivialDrive Error: " + message);
-		alert(message);
+		if(!((Activity) this).isFinishing())
+		{
+		    //show dialog
+			alert(message);
+		}
 	}
 
-	public void alert(String message) {
-		AlertDialog.Builder bld = new AlertDialog.Builder(this);
-		bld.setMessage(message);
-		bld.setNeutralButton("OK", null);
-		Log.d(TAG, "Showing alert dialog: " + message);
-		bld.create().show();
+	public void alert(String message) {	
+		try {
+			AlertDialog.Builder bld = new AlertDialog.Builder(this);
+			bld.setMessage(message);
+			bld.setNeutralButton("OK", null);
+			Log.d(TAG, "Showing alert dialog: " + message);
+			bld.create().show();
+		}catch (BadTokenException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/** Verifies the developer payload of a purchase. */

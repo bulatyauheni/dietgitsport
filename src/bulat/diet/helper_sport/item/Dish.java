@@ -20,6 +20,7 @@ public class Dish implements Comparable<Dish>{
 	private int popularity;
 	private int limit;
 	private String type;
+	private boolean mValid = true;
 	
 	public Dish( String name, String description, int caloricity,
 			int category, int iscategory, int popularity, String type, String fat, String carbon, String protein,  String categoryName, String barcode, String dishId) {
@@ -323,6 +324,20 @@ public class Dish implements Comparable<Dish>{
 	public void setBarcode(String barcode) {
 		this.barcode = barcode;
 	}
-			
 
+	public void setValid(boolean b) {
+		mValid  = b;
+	}
+	
+	public boolean isValid() {
+		try {					
+			Float delta = Float.valueOf(getCarbonStr())*4 + Float.valueOf(getFatStr())*9 + Float.valueOf(getProteinStr())*4 - getCaloricity();
+			if (delta/getCaloricity() > 0.05 || delta/getCaloricity() < -0.05  ) {
+				return false;
+			} 		
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
+	}
 }

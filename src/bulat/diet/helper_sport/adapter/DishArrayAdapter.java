@@ -3,6 +3,7 @@ package bulat.diet.helper_sport.adapter;
 import java.util.List;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,9 +94,10 @@ public class DishArrayAdapter extends ArrayAdapter<Dish> {
 
 			idView.setText(itemId);
 
-			if (parent != null) {
-
-				
+			if (!item.isValid()) {
+				rowView.setBackgroundColor(Color.RED);				
+			} else {
+				rowView.setBackgroundColor(Color.GRAY);	
 			}
 		}
 		
