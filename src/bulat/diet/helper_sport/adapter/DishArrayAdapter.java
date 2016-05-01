@@ -95,9 +95,9 @@ public class DishArrayAdapter extends ArrayAdapter<Dish> {
 			idView.setText(itemId);
 
 			if (!item.isValid()) {
-				rowView.setBackgroundColor(Color.RED);				
+				rowView.setBackgroundColor(context.getResources().getColor(R.color.red));				
 			} else {
-				rowView.setBackgroundColor(Color.GRAY);	
+				rowView.setBackgroundColor(context.getResources().getColor(R.color.main_color));	
 			}
 		}
 		

@@ -1,6 +1,8 @@
 package bulat.diet.helper_sport.item;
 
-public class Dish implements Comparable<Dish>{
+import java.util.Comparator;
+
+public class Dish implements Comparable<Dish>, Comparator<Dish>{
 	
 	private String id;
 	private String name;
@@ -230,7 +232,7 @@ public class Dish implements Comparable<Dish>{
 	public boolean equals(Object o) {
 		try{
 		Dish temp = (Dish) o;
-		if(this.name.equals(temp.getName()) && this.caloricity==temp.getCaloricity() && this.type.equals(temp.getType())){
+		if(this.name.toLowerCase().trim().replaceAll("\\.", ",").equals(temp.getName().toLowerCase().trim().replaceAll("\\.", ","))){
 			return true;
 		}else{
 			return false;
@@ -244,15 +246,18 @@ public class Dish implements Comparable<Dish>{
 
 	public int compareTo(Dish another) {
 		try{
-			if(another.getName().equals(this.getName())){
-				return 0;
-			}
+			return this.getName().compareToIgnoreCase(another.getName());
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
 		return 1;
 	}
 
+	@Override
+	   public int hashCode()
+	   {
+	      return name.toLowerCase().trim().replaceAll("\\.", ",").hashCode();  // good enough for this purpose
+	   } 
 
 	public int getWeight() {
 		return weight;
@@ -332,12 +337,28 @@ public class Dish implements Comparable<Dish>{
 	public boolean isValid() {
 		try {					
 			Float delta = Float.valueOf(getCarbonStr())*4 + Float.valueOf(getFatStr())*9 + Float.valueOf(getProteinStr())*4 - getCaloricity();
-			if (delta/getCaloricity() > 0.05 || delta/getCaloricity() < -0.05  ) {
+			delta = Math.abs(delta);
+			if ((delta >= 5) && (delta/getCaloricity() > 0.05)) {
 				return false;
 			} 		
 		} catch (Exception e) {
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public int compare(Dish another, Dish curr) {
+		try{
+			String anotherNameLower = another.getName().toLowerCase().trim().replaceAll("\\.", ",");
+			String thisNameLower = curr.getName().toLowerCase().trim().replaceAll("\\.", ",");
+			
+			if(anotherNameLower.equals(thisNameLower)){
+				return 0;
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return 1;
 	}
 }

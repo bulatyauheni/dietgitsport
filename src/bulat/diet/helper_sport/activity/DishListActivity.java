@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Set;
@@ -26,6 +27,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.dm.zbar.android.scanner.ZBarScannerActivity;
+
 
 
 
@@ -691,7 +693,7 @@ public class DishListActivity extends BaseActivity {
 			try {
 				searchString = URLEncoder.encode(searchString, "UTF-8");
 
-			Set<Dish> unicDish = new TreeSet<Dish>();			
+				TreeSet<Dish> unicDish = new TreeSet<Dish>();			
 			unicDish.addAll(list);
 			/*if(!unicDish.isEmpty()){
 				for (Dish dish : unicDish) {
@@ -764,7 +766,9 @@ public class DishListActivity extends BaseActivity {
 											.getString("carbon").replace(',',
 													'.'), jsonObject.getString(
 											"protein").replace(',', '.'));
-							unicDish.add(d);
+							if (!unicDish.contains(d)) { 
+								unicDish.add(d);
+							}
 						}
 						list = new ArrayList<Dish>(unicDish);
 					} catch (Exception e) {
@@ -801,7 +805,7 @@ public class DishListActivity extends BaseActivity {
 		}
 		emptyLayout.setVisibility(View.GONE);
 		loadingView.setVisibility(View.GONE);
-		markUnvalidDishes(list);
+		removeUnvalidDishes(list);
 		if (list.size() > 0) {
 			badSearchView.setVisibility(View.GONE);
 			try {
@@ -823,14 +827,13 @@ public class DishListActivity extends BaseActivity {
 
 	}
 
-	public void markUnvalidDishes(ArrayList<Dish> list2) {
-		/*for (Iterator<Dish> iterator = list2.iterator(); iterator.hasNext(); ) {
+	public void removeUnvalidDishes(ArrayList<Dish> list2) {
+		for (Iterator<Dish> iterator = list2.iterator(); iterator.hasNext(); ) {
 			Dish dish = iterator.next();
-			Float delta = Float.valueOf(dish.getCarbonStr())*4 + Float.valueOf(dish.getFatStr())*9 + Float.valueOf(dish.getProteinStr())*4 - dish.getCaloricity();
-			if (delta > 5 || delta < -5  ) {
+			if (!dish.isValid()) {
 				iterator.remove();
 			}
-		}	 */ 
+		}	  
 	}
 	
 	@Override
