@@ -38,6 +38,7 @@ public class StatisticFCPActivity extends Activity {
 	float valuesNormal[]={1,4,1};
 	float valuesFith[]={1,5,1};
 	float valuesBrain[]={1,3,(float) 0.8};
+	float valuesCustom[]={0,0,0};
 	float values2[]={0,0,0};
 	
 	private Spinner spinnerDiet;
@@ -49,6 +50,8 @@ public class StatisticFCPActivity extends Activity {
 	private TextView proteinUser;
 	private TextView fatUser;
 	private TextView carbonUser;
+	private boolean isCustomMode = false;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -67,10 +70,31 @@ public class StatisticFCPActivity extends Activity {
 		time.add(new DishType( 0, getString(R.string.balance_norm)));
 		time.add(new DishType( 1, getString(R.string.balance_fith)));
 		time.add(new DishType( 2, getString(R.string.balance_clever)));
-		ArrayAdapter<DishType>  adapter = new ArrayAdapter<DishType>(SettingsActivity.ctx, android.R.layout.simple_spinner_item, time);		
+		int limitKkal = SaveUtils.readInt(SaveUtils.LIMIT, 0, this);
+		if(limitKkal>0){
+			isCustomMode = true;
+			
+			int limitProtein = SaveUtils.readInt(SaveUtils.LIMIT_PROTEIN, 0, this);
+			int limitCarbon = SaveUtils.readInt(SaveUtils.LIMIT_CARBON, 0, this);
+			int limitFat = SaveUtils.readInt(SaveUtils.LIMIT_FAT, 0, this);
+			
+			int sum = limitProtein + limitCarbon + limitFat;
+			valuesCustom[0] = (float)limitProtein/sum;
+			valuesCustom[1] = (float)limitCarbon/sum;
+			valuesCustom[2] = (float)limitFat/sum;
+			time.add(new DishType( 3, getString(R.string.balance_custom)));
+		}
+		ArrayAdapter<DishType>  adapter = new ArrayAdapter<DishType>(SettingsActivity.ctx, android.R.layout.simple_spinner_item, time);	
+		
+		
+		
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinnerDiet.setAdapter(adapter);	
-		lifestyle =  SaveUtils.getLifeStyle(this);
+		if (isCustomMode) {
+			lifestyle = 3;
+		} else {
+			lifestyle =  SaveUtils.getLifeStyle(this);
+		}
 		spinnerDiet.setSelection(lifestyle);
 		spinnerDiet.setOnItemSelectedListener(spinnerListener);
 		Button backButton = (Button) viewToLoad.findViewById(R.id.buttonBack);				
@@ -130,6 +154,9 @@ public class StatisticFCPActivity extends Activity {
 		case 2:
 			values=calculateData(valuesBrain);
 			break;
+		case 3:
+			values=calculateData(valuesCustom);
+			break;	
 		default:
 			values=calculateData(valuesNormal);
 			break;

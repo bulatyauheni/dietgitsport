@@ -115,7 +115,7 @@
                         android:layout_alignParentRight="true"
                         android:layout_alignParentTop="true"
                         android:gravity="center_vertical"
-                        android:maxLines="3"
+                        android:inputType="textMultiLine"
                         android:text="TextView"
                         android:textColor="@color/text_color"
                         android:textSize="13dip"
