@@ -162,6 +162,7 @@
 	<string name="balance_norm">Нормальный образ жизни</string>
 	<string name="balance_fith">При больших физических нагрузках</string>
 	<string name="balance_clever">Для работников умственного труда</string>
+	<string name="balance_custom">Мои настройки</string>
 	
 	
 	<string name="fitnes_burn_label">Сжигает калорий в час (ккал/час):</string>

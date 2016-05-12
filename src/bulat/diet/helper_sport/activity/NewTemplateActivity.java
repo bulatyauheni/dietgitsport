@@ -200,7 +200,7 @@ public class NewTemplateActivity extends BaseActivity {
 						copyIntent.putExtra(NewTemplateActivity.TEMPLATE, true);
 						copyIntent.putExtra(AddTodayFitnesActivity.ADD, 1);
 						copyIntent.putExtra(DishActivity.DATE, curentDateandTime);
-						copyIntent.putExtra(AddTodayDishActivity.DISH_NAME, name.getText());
+						copyIntent.putExtra(AddTodayDishActivity.DISH_NAME, name.getText().toString());
 						copyIntent.putExtra(AddTodayDishActivity.DISH_CALORISITY,
 								Integer.valueOf(calorisity.getText().toString()));
 						copyIntent.putExtra(AddTodayDishActivity.DISH_FAT,

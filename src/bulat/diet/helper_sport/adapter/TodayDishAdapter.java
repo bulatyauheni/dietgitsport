@@ -214,7 +214,7 @@ public class TodayDishAdapter extends CursorAdapter {
 				TextView id = (TextView) v.findViewById(R.id.textViewId);
 				intent.putExtra(AddTodayDishActivity.TITLE,
 						R.string.edit_today_dish);
-				intent.putExtra(AddTodayDishActivity.DISH_NAME, name.getText());
+				intent.putExtra(AddTodayDishActivity.DISH_NAME, name.getText().toString());
 				intent.putExtra(AddTodayDishActivity.DISH_CALORISITY,
 						Integer.valueOf(calorisity.getText().toString()));
 				intent.putExtra(AddTodayDishActivity.DISH_FAT,

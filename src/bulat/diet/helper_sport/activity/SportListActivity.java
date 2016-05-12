@@ -295,7 +295,7 @@ public class SportListActivity extends Activity{
 			TextView typeView = (TextView) v
 					.findViewById(R.id.textViewDishType);
 
-			intent.putExtra(AddTodayDishActivity.DISH_NAME, name.getText());
+			intent.putExtra(AddTodayDishActivity.DISH_NAME, name.getText().toString());
 			// adding in local db
 			if ("0".equals(idView.getText())) {
 				temp = (Dish) dishesList.getAdapter().getItem(arg2);

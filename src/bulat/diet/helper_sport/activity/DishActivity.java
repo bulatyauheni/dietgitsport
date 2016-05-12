@@ -182,7 +182,7 @@ public class DishActivity extends BaseActivity {
 											curentDateandTime);
 									copyIntent.putExtra(
 											AddTodayDishActivity.DISH_NAME,
-											name.getText());
+											name.getText().toString());
 									copyIntent.putExtra(
 											AddTodayDishActivity.DISH_CATEGORY,
 											Integer.parseInt(dishForCopy
@@ -193,7 +193,7 @@ public class DishActivity extends BaseActivity {
 													dishForCopy.getType());
 									copyIntent.putExtra(
 											AddTodayDishActivity.DISH_NAME,
-											name.getText());
+											name.getText().toString());
 									copyIntent
 											.putExtra(
 													AddTodayDishActivity.DISH_CALORISITY,
