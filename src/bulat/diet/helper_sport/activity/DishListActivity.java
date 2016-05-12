@@ -805,7 +805,9 @@ public class DishListActivity extends BaseActivity {
 		}
 		emptyLayout.setVisibility(View.GONE);
 		loadingView.setVisibility(View.GONE);
-		removeUnvalidDishes(list);
+		
+		// ToDo - alcohol does not match for this rule 
+		//removeUnvalidDishes(list);
 		if (list.size() > 0) {
 			badSearchView.setVisibility(View.GONE);
 			try {

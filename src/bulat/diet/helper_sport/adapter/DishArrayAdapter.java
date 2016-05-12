@@ -93,12 +93,12 @@ public class DishArrayAdapter extends ArrayAdapter<Dish> {
 			TextView idView = (TextView) rowView.findViewById(R.id.textViewId);
 
 			idView.setText(itemId);
-
-			if (!item.isValid()) {
-				rowView.setBackgroundColor(context.getResources().getColor(R.color.red));				
-			} else {
+			// ToDo - alcohol does not match for this rule 
+			//if (!item.isValid()) {
+			//	rowView.setBackgroundColor(context.getResources().getColor(R.color.red));				
+			//} else {
 				rowView.setBackgroundColor(context.getResources().getColor(R.color.main_color));	
-			}
+			//}
 		}
 		
 		return rowView;
