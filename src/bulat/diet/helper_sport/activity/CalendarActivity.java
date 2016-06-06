@@ -243,25 +243,8 @@ public class CalendarActivity extends BaseActivity {
 			final Spinner chartTypeSpiner = (Spinner) dialog
 					.findViewById(R.id.SpinnerChartType);
 			// chartTypeSpiner
-			ArrayList<DishType> types = new ArrayList<DishType>();
-			types.add(new DishType(1,
-					getString(R.string.change_weight_dialog_title)));
-			if (SaveUtils.getChestEnbl(CalendarActivity.this))
-				types.add(new DishType(2, getString(R.string.volume_chest)));
-			if (SaveUtils.getBicepsEnbl(CalendarActivity.this))
-				types.add(new DishType(3, getString(R.string.volume_biceps)));
-			if (SaveUtils.getForearmEnbl(CalendarActivity.this))
-				types.add(new DishType(4, getString(R.string.volume_forearm)));
-			if (SaveUtils.getHipEnbl(CalendarActivity.this))
-				types.add(new DishType(5, getString(R.string.volume_hip)));
-			if (SaveUtils.getNeckEnbl(CalendarActivity.this))
-				types.add(new DishType(6, getString(R.string.volume_neck)));
-			if (SaveUtils.getShinEnbl(CalendarActivity.this))
-				types.add(new DishType(7, getString(R.string.volume_shin)));
-			if (SaveUtils.getPelvisEnbl(CalendarActivity.this))
-				types.add(new DishType(8, getString(R.string.volume_pelvis)));
-			if (SaveUtils.getWaistEnbl(CalendarActivity.this))
-				types.add(new DishType(9, getString(R.string.volume_waist)));
+			ArrayList<DishType> types = getChartTypes(CalendarActivity.this);
+					
 
 			ArrayAdapter<DishType> adapter = new ArrayAdapter<DishType>(this,
 					android.R.layout.simple_spinner_item, types);
@@ -432,6 +415,29 @@ public class CalendarActivity extends BaseActivity {
 		}
 
 		return dialog;
+	}
+
+	private ArrayList<DishType> getChartTypes(CalendarActivity calendarActivity) {
+		ArrayList<DishType> types = new ArrayList<DishType>();
+		types.add(new DishType(1,
+				getString(R.string.change_weight_dialog_title)));
+		if (SaveUtils.getChestEnbl(CalendarActivity.this))
+			types.add(new DishType(2, getString(R.string.volume_chest)));
+		if (SaveUtils.getBicepsEnbl(CalendarActivity.this))
+			types.add(new DishType(3, getString(R.string.volume_biceps)));
+		if (SaveUtils.getForearmEnbl(CalendarActivity.this))
+			types.add(new DishType(4, getString(R.string.volume_forearm)));
+		if (SaveUtils.getHipEnbl(CalendarActivity.this))
+			types.add(new DishType(5, getString(R.string.volume_hip)));
+		if (SaveUtils.getNeckEnbl(CalendarActivity.this))
+			types.add(new DishType(6, getString(R.string.volume_neck)));
+		if (SaveUtils.getShinEnbl(CalendarActivity.this))
+			types.add(new DishType(7, getString(R.string.volume_shin)));
+		if (SaveUtils.getPelvisEnbl(CalendarActivity.this))
+			types.add(new DishType(8, getString(R.string.volume_pelvis)));
+		if (SaveUtils.getWaistEnbl(CalendarActivity.this))
+			types.add(new DishType(9, getString(R.string.volume_waist)));
+		return types;
 	}
 
 	@Override

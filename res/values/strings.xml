@@ -312,4 +312,9 @@
 		<string name="barcode">Штрих-код:</string>
 		
 		<string name="download_backup">Искать сохранение в облаке?</string>
+		
+		<string name="idealWeight">Идеальный вес</string>
+		<string name="currentWeight">Ваш вес</string>
+		
+		<string name="ideal">Идеал: </string>
 </resources>
