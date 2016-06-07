@@ -313,8 +313,8 @@
 		
 		<string name="download_backup">Искать сохранение в облаке?</string>
 		
-		<string name="idealWeight">Идеальный вес</string>
-		<string name="currentWeight">Ваш вес</string>
+		<string name="idealWeight">Цель</string>
+		<string name="currentWeight">Текущее значение</string>
 		
-		<string name="ideal">Идеал: </string>
+		<string name="ideal">Цель: </string>
 </resources>
