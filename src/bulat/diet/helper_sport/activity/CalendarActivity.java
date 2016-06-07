@@ -111,7 +111,11 @@ public class CalendarActivity extends BaseActivity {
 
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				showDialog(DIALOG_CHART);
+				//showDialog(DIALOG_CHART);
+				Intent intent = new Intent();
+				intent.setClass(getParent(), WeightChartActivity.class);
+				CalendarActivityGroup activityStack = (CalendarActivityGroup) getParent();
+				activityStack.push("WeightChartActivity", intent);
 			}
 		});
 		setContentView(viewToLoad);
@@ -609,7 +613,6 @@ public class CalendarActivity extends BaseActivity {
 
 		public void onClick(View v) {
 			showDialog(DIALOG_CHART);
-
 		}
 	};
 	DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {

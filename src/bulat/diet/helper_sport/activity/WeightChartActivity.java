@@ -209,9 +209,12 @@ public class WeightChartActivity extends Activity {
 		// data.setData(generateBubbleData());
 		// data.setData(generateScatterData());
 		// data.setData(generateCandleData());
-
-		mChart.setData(data);
-		mChart.invalidate();
+		if (mDates == null || mDates.length == 0) {
+			
+		} else {
+			mChart.setData(data);
+			mChart.invalidate();
+		}
 	}
 
 	private void initData() {
