@@ -59,7 +59,6 @@
                 </TextView>
                 </LinearLayout>
                 <LinearLayout
-                    android:id="@+id/relativeLayout4"
                     android:layout_width="0px"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
@@ -115,7 +114,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/imageLayout1"
             android:layout_width="0px"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -177,7 +175,6 @@
                 android:orientation="horizontal" >
 
                <LinearLayout
-                    android:id="@+id/linearLayoutDishCall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -219,7 +216,6 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/linearLayoutDishCall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -261,7 +257,6 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/linearLayoutDishCall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -316,7 +311,6 @@
         android:visibility="gone" >
 
         <TextView
-            android:id="@+id/textViewTotalLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dip"
@@ -341,7 +335,6 @@
         android:id="@android:id/empty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/linearLayout1"
         android:layout_below="@+id/relativeLayout1"
         android:text="" />
 
