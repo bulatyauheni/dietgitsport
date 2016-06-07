@@ -94,6 +94,16 @@ public class SaveUtils {
 	public static final String LIMIT_CARBON = "LIMIT_CARBON";
 	public static final String LIMIT_FAT = "LIMIT_FAT";
 	public static final String EXPDATABASEFILENAME = "EXPDATABASEFILENAME";
+	public static final String USER_IDEAL_WEIGHT = "USER_IDEAL_WEIGHT";
+	public static final String USER_IDEAL_CHEST = "USER_IDEAL_CHEST";
+	public static final String USER_IDEAL_HIP = "USER_IDEAL_HIP";
+	public static final String USER_IDEAL_FOREARM = "USER_IDEAL_FOREARM";
+	public static final String USER_IDEAL_BICEPS = "USER_IDEAL_BICEPS";
+	public static final String USER_IDEAL_NECK = "USER_IDEAL_NECK";
+	public static final String USER_IDEAL_SHIN = "USER_IDEAL_SHIN";
+	public static final String USER_IDEAL_PELVIS = "USER_IDEAL_PELVIS";
+	public static final String USER_IDEAL_WAIST = "USER_IDEAL_WAIST";
+
 	
 	public static void saveScrollPosition(int pos, Context context){
 		SharedPreferences preferences = PreferenceManager
@@ -1318,6 +1328,21 @@ public class SaveUtils {
 	
 	}
 	
+	public static void writeFloat(String name, Float valueOf, Context context) {
+		SharedPreferences preferences = PreferenceManager
+				.getDefaultSharedPreferences(context);
+				Editor editor = preferences.edit();   
+				editor.putFloat(name, valueOf);	
+				editor.commit();		
+	}
+	
+	public static Float readFloat(String name, Float deffValueOf, Context context) {
+		SharedPreferences preferences = PreferenceManager
+				.getDefaultSharedPreferences(context);				
+				return preferences.getFloat(name, deffValueOf);
+	
+	}
+	
 	public static void setLastExportedDataBaseFileName(String name, Context context) {
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(context);
@@ -1345,6 +1370,12 @@ public class SaveUtils {
 		.getDefaultSharedPreferences(context);
 		
 		return preferences.getString(EXPFILENAME, "");
+	}
+	public static float getIdealWeight(Context context) {
+		SharedPreferences preferences = PreferenceManager
+				.getDefaultSharedPreferences(context);
+				
+				return preferences.getFloat(USER_IDEAL_WEIGHT, (float) 65.1);
 	}
 	
 }
