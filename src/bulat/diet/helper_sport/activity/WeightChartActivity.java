@@ -102,7 +102,7 @@ public class WeightChartActivity extends Activity {
 
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		chartTypeSpiner.setAdapter(adapter);
-		chartTypeSpiner.setSelection(1);
+		chartTypeSpiner.setSelection(0);
 		chartTypeSpiner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			public void onItemSelected(AdapterView<?> arg0, View arg1,

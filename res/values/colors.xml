@@ -12,7 +12,7 @@
 	<color name="light_green">#7DB8D4</color>
 	<color name="light_red">#FFB5B5</color>
 	<color name="header_color">#D39A6F</color>
-	<color name="main_color">#FFF0E5</color>
+	<color name="main_color">#FCFFF7</color> <!-- FFF0E5 -->
 	<color name="title_color">#4A829E</color>
 	<color name="tab_color">#4981A0</color>
 	<color name="tab_selected_color">#D39A6F</color>
