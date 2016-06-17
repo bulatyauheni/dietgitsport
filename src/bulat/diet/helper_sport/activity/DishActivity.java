@@ -364,6 +364,7 @@ public class DishActivity extends BaseActivity {
 	}
 
 	IabHelper mHelper;
+	private Button chartButton;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -378,6 +379,24 @@ public class DishActivity extends BaseActivity {
 		Bundle extras = getIntent().getExtras();
 		View viewToLoad = LayoutInflater.from(this.getParent()).inflate(
 				R.layout.today_list, null);
+		chartButton = (Button) viewToLoad.findViewById(R.id.buttonChart);
+		chartButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent();
+				intent.setClass(getParent(), StatisticFCPActivity.class);
+				if (CalendarActivityGroup.class.toString().equals(parentName)) {
+					CalendarActivityGroup activityStack = (CalendarActivityGroup) getParent();
+					activityStack.push("StatisticFCPActivity", intent);
+				} else {
+					DishActivityGroup activityStack = (DishActivityGroup) getParent();
+					activityStack.push("StatisticFCPActivity", intent);
+				}
+				
+			}
+		});
+		
 		header = (TextView) viewToLoad.findViewById(R.id.textViewTitle);
 		Button exitButton = (Button) viewToLoad.findViewById(R.id.buttonExit);
 		exitButton.setOnClickListener(new OnClickListener() {

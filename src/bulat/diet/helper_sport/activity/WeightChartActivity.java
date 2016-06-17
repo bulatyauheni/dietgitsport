@@ -11,67 +11,45 @@ import java.util.Locale;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.PointF;
-import android.graphics.RectF;
-import android.graphics.Typeface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.View.OnClickListener;
-import android.widget.SeekBar;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 import bulat.diet.helper_sport.R;
+import bulat.diet.helper_sport.controls.SegmentedGroup;
 import bulat.diet.helper_sport.db.TodayDishHelper;
 import bulat.diet.helper_sport.item.Day;
 import bulat.diet.helper_sport.item.DishType;
 import bulat.diet.helper_sport.utils.SaveUtils;
 
-import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.CombinedChart;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.Legend.LegendForm;
-import com.github.mikephil.charting.components.Legend.LegendPosition;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.XAxis.XAxisPosition;
 import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.components.YAxis.AxisDependency;
-import com.github.mikephil.charting.components.YAxis.YAxisLabelPosition;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.BubbleData;
-import com.github.mikephil.charting.data.BubbleDataSet;
-import com.github.mikephil.charting.data.BubbleEntry;
-import com.github.mikephil.charting.data.CandleData;
-import com.github.mikephil.charting.data.CandleDataSet;
-import com.github.mikephil.charting.data.CandleEntry;
 import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.data.ScatterData;
-import com.github.mikephil.charting.data.ScatterDataSet;
 import com.github.mikephil.charting.formatter.YAxisValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
-import com.github.mikephil.charting.utils.ColorTemplate;
-import com.jjoe64.graphview.GraphView.GraphViewData;
 
-public class WeightChartActivity extends Activity {
+public class WeightChartActivity extends Activity implements OnChartValueSelectedListener, OnCheckedChangeListener {
 	protected int mCurrnetChartType = 0;
 	protected String[] mDates;
 	private CombinedChart mChart;
@@ -79,6 +57,7 @@ public class WeightChartActivity extends Activity {
 	List<Day> days;
 	private EditText goalET;
 	private Spinner chartTypeSpiner;
+	private SegmentedGroup timePeriodRG;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -88,13 +67,52 @@ public class WeightChartActivity extends Activity {
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		View viewToLoad = LayoutInflater.from(this.getParent().getParent()).inflate(R.layout.activity_combined, null);
 		this.setContentView(viewToLoad); 
-
-		initData();
 		
-		goalET = (EditText) findViewById(R.id.editTextLimitValue);
-		
-		chartTypeSpiner = (Spinner) viewToLoad.findViewById(R.id.SpinnerChartType);
+		goalET = (EditText) findViewById(R.id.editTextLimitValue);	
+		Button saveGoalButton = (Button) findViewById(R.id.buttonSetGoal);
+		saveGoalButton.setOnClickListener(new OnClickListener() {
 
+			public void onClick(View v) {
+
+				goalET.setBackgroundColor(Color.WHITE);
+				if (goalET.getText().length() < 1) {
+					goalET.setBackgroundColor(Color.RED);
+				} else {
+					try {
+						SaveUtils.writeFloat(getIdealValueId(mCurrnetChartType),
+								Float.valueOf(goalET.getText().toString()),
+								WeightChartActivity.this);
+						Toast.makeText(WeightChartActivity.this,
+								getString(R.string.save_limit),
+								Toast.LENGTH_LONG).show();
+						drawChart(mCurrnetChartType);
+						
+					} catch (Exception e) {
+						goalET.setBackgroundColor(Color.RED);
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+
+		
+		initChart();
+		
+		initChartTypeSpiner();
+		
+		initTimeIntervalSelector();
+				
+		
+	}
+	
+	private void initTimeIntervalSelector() {
+		timePeriodRG = (SegmentedGroup) findViewById(R.id.weightChartTimeSegments);		
+		timePeriodRG.setOnCheckedChangeListener(this);
+		timePeriodRG.check(timePeriodRG.getChildAt(0).getId());
+	}
+
+	private void initChartTypeSpiner() {
+		chartTypeSpiner = (Spinner) findViewById(R.id.SpinnerChartType);
 		// chartTypeSpiner
 		ArrayList<DishType> types = getChartTypes(this);
 		ArrayAdapter<DishType> adapter = new ArrayAdapter<DishType>(this,
@@ -113,8 +131,8 @@ public class WeightChartActivity extends Activity {
 				goalET.setText(SaveUtils.readFloat(getIdealValueId(mCurrnetChartType),
 						Float.valueOf(0),
 						WeightChartActivity.this).toString());
-				//redraw chart
-				initChart(mCurrnetChartType);
+				//redraw chart	
+				drawChart(mCurrnetChartType);
 			}
 
 			@Override
@@ -122,36 +140,9 @@ public class WeightChartActivity extends Activity {
 				// TODO Auto-generated method stub
 				
 			}
-		});
-		
-		Button saveGoalButton = (Button) findViewById(R.id.buttonSetGoal);
-		saveGoalButton.setOnClickListener(new OnClickListener() {
-
-			public void onClick(View v) {
-
-				goalET.setBackgroundColor(Color.WHITE);
-				if (goalET.getText().length() < 1) {
-					goalET.setBackgroundColor(Color.RED);
-				} else {
-					try {
-						SaveUtils.writeFloat(getIdealValueId(mCurrnetChartType),
-								Float.valueOf(goalET.getText().toString()),
-								WeightChartActivity.this);
-						Toast.makeText(WeightChartActivity.this,
-								getString(R.string.save_limit),
-								Toast.LENGTH_LONG).show();
-						initChart(mCurrnetChartType);
-						
-					} catch (Exception e) {
-						goalET.setBackgroundColor(Color.RED);
-						e.printStackTrace();
-					}
-				}
-			}
-		});
-
+		});	
 	}
-	
+
 	private String getIdealValueId(int chartType) {
 		switch (chartType) {
 		case 1:
@@ -178,11 +169,12 @@ public class WeightChartActivity extends Activity {
 		return null;
 	}
 
-	private void initChart(int chartType) {
+	private void initChart() {
 		mChart = (CombinedChart) findViewById(R.id.chart1);
+		mChart.setOnChartValueSelectedListener(this);
 		mChart.setDescription("");
 		mChart.setBackgroundColor(Color.WHITE);
-		mChart.setDrawGridBackground(false);
+		mChart.setDrawGridBackground(true);
 		mChart.setDrawBarShadow(false);
 
 		// draw bars behind lines
@@ -193,15 +185,17 @@ public class WeightChartActivity extends Activity {
 
 		YAxis rightAxis = mChart.getAxisRight();
 		rightAxis.setDrawGridLines(false);
-		rightAxis.setAxisMinValue(0f); // this replaces setStartAtZero(true)
+		rightAxis.setAxisMinValue(20f); // this replaces setStartAtZero(true)
 
 		YAxis leftAxis = mChart.getAxisLeft();
 		leftAxis.setDrawGridLines(false);
-		leftAxis.setAxisMinValue(0f); // this replaces setStartAtZero(true)
+		leftAxis.setAxisMinValue(20f); // this replaces setStartAtZero(true)
 
 		XAxis xAxis = mChart.getXAxis();
-		xAxis.setPosition(XAxisPosition.BOTH_SIDED);
+		xAxis.setPosition(XAxisPosition.BOTH_SIDED);		
+	}
 
+	private void drawChart(int chartType) {
 		CombinedData data = new CombinedData(mDates);
 
 		data.setData(generateLineData());
@@ -214,11 +208,12 @@ public class WeightChartActivity extends Activity {
 		} else {
 			mChart.setData(data);
 			mChart.invalidate();
+			mChart.animateXY(1000, 1000);
 		}
 	}
 
-	private void initData() {
-		days = TodayDishHelper.getDaysStat(getApplicationContext());
+	private void initDataForChart(int daysCount) {
+		days = TodayDishHelper.getDaysStat(getApplicationContext(), daysCount);
 		Collections.reverse(days);
 
 		if (days != null) {
@@ -260,17 +255,17 @@ public class WeightChartActivity extends Activity {
 		set.setValueTextColor(Color.rgb(240, 238, 70));
 
 		set.setAxisDependency(YAxis.AxisDependency.LEFT);
-
+		set.setDrawValues(false);
 		d.addDataSet(set);
 
 		return d;
 	}
 
 	private BarData generateBarData(int chartType) {
-
+		BarEntry previousEntry;
 		BarData d = new BarData();
 		ArrayList<BarEntry> entries = new ArrayList<BarEntry>();
-		for (int index = 0; index < itemcount; index++)
+		for (int index = 0; index < itemcount; index++) 
 			switch (chartType) {
 			case 1:
 				entries.add(new BarEntry(days.get(index).getBodyWeight(), index));
@@ -306,32 +301,14 @@ public class WeightChartActivity extends Activity {
 
 		BarDataSet set = new BarDataSet(entries,
 				getString(R.string.currentWeight));
-		set.setColor(Color.rgb(60, 220, 78));
+				set.setColor(Color.rgb(60, 220, 78));
+		set.addColor(Color.rgb(255, 38, 49));
 		set.setValueTextColor(Color.rgb(60, 220, 78));
 		set.setValueTextSize(10f);
 		d.addDataSet(set);
 
 		set.setAxisDependency(YAxis.AxisDependency.LEFT);
-
-		return d;
-	}
-
-	protected ScatterData generateScatterData() {
-
-		ScatterData d = new ScatterData();
-
-		ArrayList<Entry> entries = new ArrayList<Entry>();
-
-		for (int index = 0; index < itemcount; index++)
-			entries.add(new Entry(getRandom(20, 15), index));
-
-		ScatterDataSet set = new ScatterDataSet(entries, "Scatter DataSet");
-		set.setColor(Color.GREEN);
-		set.setScatterShapeSize(7.5f);
-		set.setDrawValues(false);
-		set.setValueTextSize(10f);
-		d.addDataSet(set);
-
+		set.setBarSpacePercent(20);
 		return d;
 	}
 
@@ -358,71 +335,35 @@ public class WeightChartActivity extends Activity {
 		return types;
 	}
 
-	protected CandleData generateCandleData() {
-
-		CandleData d = new CandleData();
-
-		ArrayList<CandleEntry> entries = new ArrayList<CandleEntry>();
-
-		for (int index = 0; index < itemcount; index++)
-			entries.add(new CandleEntry(index, 20f, 10f, 13f, 17f));
-
-		CandleDataSet set = new CandleDataSet(entries, "Candle DataSet");
-		set.setColor(Color.rgb(80, 80, 80));
-		set.setBarSpace(0.3f);
-		set.setValueTextSize(10f);
-		set.setDrawValues(false);
-		d.addDataSet(set);
-
-		return d;
+	@Override
+	public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
+		// TODO Auto-generated method stub
+		int i = 8;
+		i = 8 +i;
 	}
 
-	protected BubbleData generateBubbleData() {
+	@Override
+	public void onNothingSelected() {
+		// TODO Auto-generated method stub
+		
+	}
 
-		BubbleData bd = new BubbleData();
-
-		ArrayList<BubbleEntry> entries = new ArrayList<BubbleEntry>();
-
-		for (int index = 0; index < itemcount; index++) {
-			float rnd = getRandom(20, 30);
-			entries.add(new BubbleEntry(index, rnd, rnd));
+	@Override
+	public void onCheckedChanged(RadioGroup group, int checkedId) {
+		switch (checkedId) {
+		case R.id.lastweek:
+			initDataForChart(7);
+			break;
+		case R.id.lastmonth:
+			initDataForChart(30);
+			break;
+		case R.id.alltime:
+			initDataForChart(800);
+			break;
+		default:
+			// Nothing to do
 		}
-
-		BubbleDataSet set = new BubbleDataSet(entries, "Bubble DataSet");
-		set.setColors(ColorTemplate.VORDIPLOM_COLORS);
-		set.setValueTextSize(10f);
-		set.setValueTextColor(Color.WHITE);
-		set.setHighlightCircleWidth(1.5f);
-		set.setDrawValues(true);
-		bd.addDataSet(set);
-
-		return bd;
-	}
-
-	private float getRandom(float range, float startsfrom) {
-		return (float) (Math.random() * range) + startsfrom;
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// getMenuInflater().inflate(R.menu.combined, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		/*
-		 * switch (item.getItemId()) { case R.id.actionToggleLineValues: { for
-		 * (IDataSet set : mChart.getData().getDataSets()) { if (set instanceof
-		 * LineDataSet) set.setDrawValues(!set.isDrawValuesEnabled()); }
-		 * 
-		 * mChart.invalidate(); break; } case R.id.actionToggleBarValues: { for
-		 * (IDataSet set : mChart.getData().getDataSets()) { if (set instanceof
-		 * BarDataSet) set.setDrawValues(!set.isDrawValuesEnabled()); }
-		 * 
-		 * mChart.invalidate(); break; } }
-		 */
-		return true;
+		drawChart(mCurrnetChartType);
 	}
 }
 

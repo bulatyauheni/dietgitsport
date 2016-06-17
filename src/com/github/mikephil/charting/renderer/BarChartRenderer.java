@@ -116,7 +116,13 @@ public class BarChartRenderer extends DataRenderer {
                 // Set the color for the currently drawn value. If the index
                 // is
                 // out of bounds, reuse colors.
-                mRenderPaint.setColor(dataSet.getColor(j / 4));
+                if (((j / 4) > 0) && dataSet.getEntryForIndex(j / 4).getVal() > dataSet.getEntryForIndex(j / 4 - 1).getVal()) {
+                	 mRenderPaint.setColor(dataSet.getColor(1));
+                } else {
+                	mRenderPaint.setColor(dataSet.getColor(0));
+                }
+               
+                
                 c.drawRect(buffer.buffer[j], buffer.buffer[j + 1], buffer.buffer[j + 2],
                         buffer.buffer[j + 3], mRenderPaint);
             }

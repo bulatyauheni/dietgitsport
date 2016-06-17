@@ -34,4 +34,7 @@
 	<color name="carbon">#6777F0</color>
 	<color name="protein">#109611</color>
 	<color name="widget_green">#ff00ff00</color>
+	
+	<color name="radio_button_selected_color">#4981A0</color>
+    <color name="radio_button_unselected_color">#e0e0e0</color>
 </resources>

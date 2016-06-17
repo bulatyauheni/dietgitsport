@@ -37,8 +37,8 @@
 	<string name="update_base">Обновление базы продуктов...</string>
 	<string name="bad_search">Ничего не найдено :(</string>
 	
-	<string name="idealCheet">Идеальный баланс:</string>
-	<string name="yourCheet">Ваш баланс:</string>
+	<string name="idealCheet">Идеальный баланс</string>
+	<string name="yourCheet">Ваш баланс</string>
 	<string name="yes">Да</string>
 	<string name="no">Нет</string>
 	<string name="dish_list">Список блюд</string>
@@ -317,4 +317,9 @@
 		<string name="currentWeight">Текущее значение</string>
 		
 		<string name="ideal">Цель: </string>
+		<string name="today">Сегодня</string>
+		<string name="yesterday">Вчера</string>
+		<string name="lastweek">Неделя</string>
+		<string name="lastmonth">Месяц</string>
+		<string name="allTime">Всё время</string>
 </resources>
