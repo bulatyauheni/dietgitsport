@@ -1,6 +1,10 @@
 package bulat.diet.helper_sport.activity;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -9,6 +13,7 @@ import android.text.Editable;
 import android.text.Selection;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,6 +29,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import bulat.diet.helper_sport.R;
 import bulat.diet.helper_sport.component.PrefixedEditText;
+import bulat.diet.helper_sport.db.TodayDishHelper;
+import bulat.diet.helper_sport.item.BodyParams;
 import bulat.diet.helper_sport.item.DishType;
 import bulat.diet.helper_sport.utils.DialogUtils;
 import bulat.diet.helper_sport.utils.SaveUtils;
@@ -64,6 +71,7 @@ public class Info extends Activity {
 	PrefixedEditText edtProtein;
 	PrefixedEditText edtFat;
 	PrefixedEditText edtCarbon;
+	private SimpleDateFormat sdf;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -185,7 +193,13 @@ public class Info extends Activity {
 			
 			
 		setSpinnerValues();
-
+		Locale locale;
+		if("".endsWith(SaveUtils.getLang(this))){
+			locale = new Locale("ru");
+		}else{
+			locale = new Locale(SaveUtils.getLang(this));
+		}
+		sdf = new SimpleDateFormat("EEE dd MMMM",locale);
 	}
 
 	@Override
@@ -415,7 +429,29 @@ public class Info extends Activity {
 					Info.this);
 			SaveUtils.saveWeightDec((int) weightSpinnerDec.getSelectedItemId(),
 					Info.this);
-
+			Date curentDateandTime = new Date();
+			Date start = new Date();
+			
+			try {
+				start = sdf.parse(sdf.format(new Date(curentDateandTime.getTime())));
+			} catch (ParseException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			start.setYear(curentDateandTime.getYear());
+			TodayDishHelper.updateBobyParams(
+					Info.this,
+					String.valueOf(start.getTime()),
+					String.valueOf(SaveUtils.getRealWeight(Info.this)),
+					new BodyParams(String.valueOf((float) SaveUtils.getChest(Info.this)+VolumeInfo.MIN_CHEST + (float) SaveUtils.getChestDec(Info.this)/10), 
+							String.valueOf((float) SaveUtils.getBiceps(Info.this)+VolumeInfo.MIN_BICEPS + (float) SaveUtils.getBicepsDec(Info.this)/10), 
+							String.valueOf((float) SaveUtils.getPelvis(Info.this)+VolumeInfo.MIN_PELVIS + (float) SaveUtils.getPelvisDec(Info.this)/10), 
+							String.valueOf((float) SaveUtils.getNeck(Info.this)+VolumeInfo.MIN_NECK + (float) SaveUtils.getNeckDec(Info.this)/10), 
+							String.valueOf((float) SaveUtils.getWaist(Info.this)+VolumeInfo.MIN_WAIST + (float) SaveUtils.getWaistDec(Info.this)/10), 
+							String.valueOf((float) SaveUtils.getForearm(Info.this)+VolumeInfo.MIN_FOREARM + (float) SaveUtils.getForearmDec(Info.this)/10), 
+							String.valueOf((float) SaveUtils.getHip(Info.this)+VolumeInfo.MIN_HIP + (float) SaveUtils.getHipDec(Info.this)/10), 
+							String.valueOf((float) SaveUtils.getShin(Info.this)+VolumeInfo.MIN_SHIN + (float) SaveUtils.getShinDec(Info.this)/10)));
+			
 			// update social profile
 			if (SaveUtils.getUserUnicId(this) != 0) {
 				new SocialUpdater(this).execute();

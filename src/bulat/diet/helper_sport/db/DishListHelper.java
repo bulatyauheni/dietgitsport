@@ -33,6 +33,7 @@ public class DishListHelper {
 		values.put(DishProvider.FAT, dish.getFatStr());
 		values.put(DishProvider.CARBON, dish.getCarbonStr());
 		values.put(DishProvider.PROTEIN, dish.getProteinStr());
+		values.put(DishProvider.BARCODE, dish.getBarcode());
 
 		// values.put(DishProvider.ISCATEGORY, dish.getIscategory());
 		// values.put(DishProvider.POPULARITY, dish.getPopularity());
