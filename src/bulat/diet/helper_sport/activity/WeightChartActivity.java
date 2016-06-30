@@ -1,6 +1,7 @@
 package bulat.diet.helper_sport.activity;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,14 +10,20 @@ import java.util.List;
 import java.util.Locale;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager.BadTokenException;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -32,6 +39,7 @@ import bulat.diet.helper_sport.controls.SegmentedGroup;
 import bulat.diet.helper_sport.db.TodayDishHelper;
 import bulat.diet.helper_sport.item.Day;
 import bulat.diet.helper_sport.item.DishType;
+import bulat.diet.helper_sport.utils.CustomAlertDialogBuilder;
 import bulat.diet.helper_sport.utils.SaveUtils;
 
 import com.github.mikephil.charting.charts.CombinedChart;
@@ -49,7 +57,8 @@ import com.github.mikephil.charting.formatter.YAxisValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
-public class WeightChartActivity extends Activity implements OnChartValueSelectedListener, OnCheckedChangeListener {
+public class WeightChartActivity extends Activity implements
+		OnChartValueSelectedListener, OnCheckedChangeListener {
 	protected int mCurrnetChartType = 0;
 	protected String[] mDates;
 	private CombinedChart mChart;
@@ -58,17 +67,19 @@ public class WeightChartActivity extends Activity implements OnChartValueSelecte
 	private EditText goalET;
 	private Spinner chartTypeSpiner;
 	private SegmentedGroup timePeriodRG;
+	private boolean readyToRate;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		readyToRate = (!SaveUtils.isAllreadyRate(WeightChartActivity.this.getParent().getParent())) && (TodayDishHelper.getDaysStat(this).size() > 9);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		View viewToLoad = LayoutInflater.from(this.getParent().getParent()).inflate(R.layout.activity_combined, null);
-		this.setContentView(viewToLoad); 
-		
-		goalET = (EditText) findViewById(R.id.editTextLimitValue);	
+		View viewToLoad = LayoutInflater.from(this.getParent().getParent())
+				.inflate(R.layout.activity_combined, null);
+		this.setContentView(viewToLoad);
+
+		goalET = (EditText) findViewById(R.id.editTextLimitValue);
 		Button saveGoalButton = (Button) findViewById(R.id.buttonSetGoal);
 		saveGoalButton.setOnClickListener(new OnClickListener() {
 
@@ -79,14 +90,15 @@ public class WeightChartActivity extends Activity implements OnChartValueSelecte
 					goalET.setBackgroundColor(Color.RED);
 				} else {
 					try {
-						SaveUtils.writeFloat(getIdealValueId(mCurrnetChartType),
+						SaveUtils.writeFloat(
+								getIdealValueId(mCurrnetChartType),
 								Float.valueOf(goalET.getText().toString()),
 								WeightChartActivity.this);
 						Toast.makeText(WeightChartActivity.this,
 								getString(R.string.save_limit),
 								Toast.LENGTH_LONG).show();
 						drawChart(mCurrnetChartType);
-						
+
 					} catch (Exception e) {
 						goalET.setBackgroundColor(Color.RED);
 						e.printStackTrace();
@@ -95,18 +107,16 @@ public class WeightChartActivity extends Activity implements OnChartValueSelecte
 			}
 		});
 
-		
 		initChart();
-		
+
 		initChartTypeSpiner();
-		
+
 		initTimeIntervalSelector();
-				
-		
+
 	}
-	
+
 	private void initTimeIntervalSelector() {
-		timePeriodRG = (SegmentedGroup) findViewById(R.id.weightChartTimeSegments);		
+		timePeriodRG = (SegmentedGroup) findViewById(R.id.weightChartTimeSegments);
 		timePeriodRG.setOnCheckedChangeListener(this);
 		timePeriodRG.check(timePeriodRG.getChildAt(0).getId());
 	}
@@ -125,44 +135,44 @@ public class WeightChartActivity extends Activity implements OnChartValueSelecte
 
 			public void onItemSelected(AdapterView<?> arg0, View arg1,
 					int arg2, long arg3) {
-				mCurrnetChartType = ((DishType) chartTypeSpiner.getSelectedItem())
-						.getTypeKey();
-				//set value for ideal weight
-				goalET.setText(SaveUtils.readFloat(getIdealValueId(mCurrnetChartType),
-						Float.valueOf(0),
+				mCurrnetChartType = ((DishType) chartTypeSpiner
+						.getSelectedItem()).getTypeKey();
+				// set value for ideal weight
+				goalET.setText(SaveUtils.readFloat(
+						getIdealValueId(mCurrnetChartType), Float.valueOf(0),
 						WeightChartActivity.this).toString());
-				//redraw chart	
+				// redraw chart
 				drawChart(mCurrnetChartType);
 			}
 
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
 				// TODO Auto-generated method stub
-				
+
 			}
-		});	
+		});
 	}
 
 	private String getIdealValueId(int chartType) {
 		switch (chartType) {
 		case 1:
-			return SaveUtils.USER_IDEAL_WEIGHT;			
+			return SaveUtils.USER_IDEAL_WEIGHT;
 		case 2:
-			return SaveUtils.USER_IDEAL_CHEST;			
+			return SaveUtils.USER_IDEAL_CHEST;
 		case 3:
-			return SaveUtils.USER_IDEAL_BICEPS;			
+			return SaveUtils.USER_IDEAL_BICEPS;
 		case 4:
-			return SaveUtils.USER_IDEAL_FOREARM;			
+			return SaveUtils.USER_IDEAL_FOREARM;
 		case 5:
-			return SaveUtils.USER_IDEAL_HIP;			
+			return SaveUtils.USER_IDEAL_HIP;
 		case 6:
-			return SaveUtils.USER_IDEAL_NECK;			
+			return SaveUtils.USER_IDEAL_NECK;
 		case 7:
-			return SaveUtils.USER_IDEAL_SHIN;			
+			return SaveUtils.USER_IDEAL_SHIN;
 		case 8:
-			return SaveUtils.USER_IDEAL_PELVIS;			
+			return SaveUtils.USER_IDEAL_PELVIS;
 		case 9:
-			return SaveUtils.USER_IDEAL_WAIST;			
+			return SaveUtils.USER_IDEAL_WAIST;
 		default:
 			break;
 		}
@@ -192,7 +202,7 @@ public class WeightChartActivity extends Activity implements OnChartValueSelecte
 		leftAxis.setAxisMinValue(20f); // this replaces setStartAtZero(true)
 
 		XAxis xAxis = mChart.getXAxis();
-		xAxis.setPosition(XAxisPosition.BOTH_SIDED);		
+		xAxis.setPosition(XAxisPosition.BOTH_SIDED);
 	}
 
 	private void drawChart(int chartType) {
@@ -204,7 +214,7 @@ public class WeightChartActivity extends Activity implements OnChartValueSelecte
 		// data.setData(generateScatterData());
 		// data.setData(generateCandleData());
 		if (mDates == null || mDates.length == 0) {
-			
+
 		} else {
 			mChart.setData(data);
 			mChart.invalidate();
@@ -215,6 +225,8 @@ public class WeightChartActivity extends Activity implements OnChartValueSelecte
 	private void initDataForChart(int daysCount) {
 		days = TodayDishHelper.getDaysStat(getApplicationContext(), daysCount);
 		Collections.reverse(days);
+		SimpleDateFormat formatter = new SimpleDateFormat("EEE dd MMMM",
+				new Locale(SaveUtils.getLang(WeightChartActivity.this)));
 
 		if (days != null) {
 			itemcount = days.size();
@@ -223,8 +235,13 @@ public class WeightChartActivity extends Activity implements OnChartValueSelecte
 			mDates = new String[itemcount];
 			int i = 0;
 			for (Day day : days) {
-				mDates[i] = String
-						.valueOf(sdf.format(new Date(day.getDateInt())));
+				String dateInString = day.getDateStr();
+				try {
+					Date date = formatter.parse(dateInString);
+					mDates[i] = String.valueOf(sdf.format(date));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
 				i++;
 			}
 
@@ -240,7 +257,8 @@ public class WeightChartActivity extends Activity implements OnChartValueSelecte
 		ArrayList<Entry> entries = new ArrayList<Entry>();
 
 		for (int index = 0; index < itemcount; index++)
-			entries.add(new Entry(Float.valueOf(goalET.getText().toString()), index));
+			entries.add(new Entry(Float.valueOf(goalET.getText().toString()),
+					index));
 
 		LineDataSet set = new LineDataSet(entries,
 				getString(R.string.idealWeight));
@@ -265,7 +283,7 @@ public class WeightChartActivity extends Activity implements OnChartValueSelecte
 		BarEntry previousEntry;
 		BarData d = new BarData();
 		ArrayList<BarEntry> entries = new ArrayList<BarEntry>();
-		for (int index = 0; index < itemcount; index++) 
+		for (int index = 0; index < itemcount; index++)
 			switch (chartType) {
 			case 1:
 				entries.add(new BarEntry(days.get(index).getBodyWeight(), index));
@@ -297,11 +315,10 @@ public class WeightChartActivity extends Activity implements OnChartValueSelecte
 			default:
 				break;
 			}
-			
 
 		BarDataSet set = new BarDataSet(entries,
 				getString(R.string.currentWeight));
-				set.setColor(Color.rgb(60, 220, 78));
+		set.setColor(Color.rgb(60, 220, 78));
 		set.addColor(Color.rgb(255, 38, 49));
 		set.setValueTextColor(Color.rgb(60, 220, 78));
 		set.setValueTextSize(10f);
@@ -310,6 +327,82 @@ public class WeightChartActivity extends Activity implements OnChartValueSelecte
 		set.setAxisDependency(YAxis.AxisDependency.LEFT);
 		set.setBarSpacePercent(20);
 		return d;
+	}
+
+	@Override
+	protected void onDestroy() {
+		if (readyToRate) {
+		try {
+			SaveUtils.setAllreadyRate(true, WeightChartActivity.this.getParent().getParent());
+			CustomAlertDialogBuilder bld = new CustomAlertDialogBuilder(WeightChartActivity.this.getParent().getParent());
+			bld.setLayout(R.layout.section_alert_dialog_two_buttons)
+			.setMessage(WeightChartActivity.this.getParent().getString(R.string.do_you_like))		
+			.setPositiveButton(R.id.dialogButtonOk, new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					CustomAlertDialogBuilder bld = new CustomAlertDialogBuilder(WeightChartActivity.this.getParent().getParent());
+					bld.setLayout(R.layout.section_alert_dialog_two_buttons)
+					.setMessage(WeightChartActivity.this.getParent().getString(R.string.rating_plaese))			
+					.setPositiveButton(R.id.dialogButtonOk, new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							WeightChartActivity.this.getParent().getParent().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + WeightChartActivity.this.getParent().getParent().getPackageName())));
+						}
+					})
+					.setPositiveButtonText(R.string.agree)
+					.setNegativeButton(R.id.dialogButtonCancel, new OnClickListener() {
+
+						@Override
+						public void onClick(View v) {
+							// TODO Auto-generated method stub
+							
+						}
+					})
+					.setNegativeButtonText(R.string.disagree);
+					bld.show();
+				}
+			})
+			.setPositiveButtonText(R.string.yes_shure)
+			.setNegativeButton(R.id.dialogButtonCancel, new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					CustomAlertDialogBuilder bld = new CustomAlertDialogBuilder(WeightChartActivity.this.getParent().getParent());
+					bld.setLayout(R.layout.section_alert_dialog_two_buttons)
+					.setMessage(WeightChartActivity.this.getParent().getString(R.string.complain_plaese))			
+					.setPositiveButton(R.id.dialogButtonOk, new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+						            "mailto","bulat.yauheni@gmail.com", null));
+							emailIntent.putExtra(Intent.EXTRA_SUBJECT, WeightChartActivity.this.getParent().getString(R.string.app_name));
+							emailIntent.putExtra(Intent.EXTRA_TEXT, "");
+							WeightChartActivity.this.getParent().getParent().startActivity((Intent.createChooser(emailIntent, "Send email...")));
+						}
+					})
+					.setPositiveButtonText(R.string.agree)
+					.setNegativeButton(R.id.dialogButtonCancel, new OnClickListener() {
+
+						@Override
+						public void onClick(View v) {
+							// TODO Auto-generated method stub
+							
+						}
+					})
+					.setNegativeButtonText(R.string.disagree);
+					bld.show();
+				}
+			})
+			.setNegativeButtonText(R.string.not_shure);
+			bld.show();
+		}catch (BadTokenException e) {
+			e.printStackTrace();
+		}
+		}
+		super.onDestroy();
 	}
 
 	private ArrayList<DishType> getChartTypes(Context ctx) {
@@ -339,13 +432,13 @@ public class WeightChartActivity extends Activity implements OnChartValueSelecte
 	public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
 		// TODO Auto-generated method stub
 		int i = 8;
-		i = 8 +i;
+		i = 8 + i;
 	}
 
 	@Override
 	public void onNothingSelected() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override

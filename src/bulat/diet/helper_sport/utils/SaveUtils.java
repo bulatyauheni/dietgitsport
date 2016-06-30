@@ -4,6 +4,7 @@ package bulat.diet.helper_sport.utils;
 import java.util.Random;
 
 import android.R.bool;
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -103,6 +104,7 @@ public class SaveUtils {
 	public static final String USER_IDEAL_SHIN = "USER_IDEAL_SHIN";
 	public static final String USER_IDEAL_PELVIS = "USER_IDEAL_PELVIS";
 	public static final String USER_IDEAL_WAIST = "USER_IDEAL_WAIST";
+	private static final String USER_RATE_APP = "USER_RATE_APP";
 
 	
 	public static void saveScrollPosition(int pos, Context context){
@@ -1376,6 +1378,19 @@ public class SaveUtils {
 				.getDefaultSharedPreferences(context);
 				
 				return preferences.getFloat(USER_IDEAL_WEIGHT, (float) 65.1);
+	}
+	public static boolean isAllreadyRate(Context context) {
+		SharedPreferences preferences = PreferenceManager
+				.getDefaultSharedPreferences(context);				
+				return preferences.getBoolean(USER_RATE_APP, false);
+	}
+	
+	public static void setAllreadyRate(Boolean value, Context context) {
+		SharedPreferences preferences = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		Editor editor = preferences.edit();				
+		editor.putBoolean(USER_RATE_APP, value);		
+		editor.commit();		
 	}
 	
 }

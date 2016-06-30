@@ -322,4 +322,13 @@
 		<string name="lastweek">Неделя</string>
 		<string name="lastmonth">Месяц</string>
 		<string name="allTime">Всё время</string>
+		<string name="do_you_like">Вам нравится это приложение?</string>
+		<string name="not_shure">Не особо</string>
+		<string name="yes_shure">Да!</string>
+		
+		<string name="rating_plaese">Как насчет оценить его в Google Play?</string>
+		<string name="agree">Да, конечно</string>
+		<string name="disagree">Не сейчас</string>
+		
+		<string name="complain_plaese">Не могли бы вы рассказать о том, что вам не нравится?</string>
 </resources>
