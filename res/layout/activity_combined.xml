@@ -12,7 +12,7 @@
         android:gravity="right|center_vertical"
         android:orientation="horizontal" 
         android:background="@color/main_color">
-
+		
         <LinearLayout
             android:layout_width="0px"
             android:layout_height="wrap_content"
@@ -22,7 +22,7 @@
             android:orientation="vertical" >
 
             <Spinner
-                android:id="@+id/SpinnerChartType"
+                android:id="@+id/spinnerChartType"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="2dp"
@@ -85,8 +85,9 @@
             android:layout_height="wrap_content"
             android:paddingTop="20dp"
             android:paddingBottom="20dp"
+            android:paddingLeft="20dp"
             android:orientation="horizontal"
-            android:gravity="center_horizontal"
+            android:gravity="left"
             android:background="@color/main_color"
             android:layout_alignParentBottom="true"
             segmentedgroup:sc_border_width="2dp"
@@ -115,5 +116,13 @@
                 android:layout_height="wrap_content"
                 android:text="@string/allTime" />
         </bulat.diet.helper_sport.controls.SegmentedGroup>
-
+        <Button
+                android:id="@+id/buttonVKChart"
+                android:layout_width="45dip"
+                android:layout_height="45dip"
+                android:background="@drawable/vk_button_xml"
+                android:clickable="true"
+                android:layout_margin="16dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"/>
 </RelativeLayout>

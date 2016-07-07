@@ -331,4 +331,6 @@
 		<string name="disagree">Не сейчас</string>
 		
 		<string name="complain_plaese">Не могли бы вы рассказать о том, что вам не нравится?</string>
+		 <string name="vk_recomend">Рекомендую! Калькулятор Калорий - простая и эффективная програма.</string>
+		 <string name="vk_toast">Запись добавлена на вашей стене ВКонтакте</string>
 </resources>

@@ -14,9 +14,15 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.provider.MediaStore.Images;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -78,6 +84,18 @@ public class WeightChartActivity extends Activity implements
 		View viewToLoad = LayoutInflater.from(this.getParent().getParent())
 				.inflate(R.layout.activity_combined, null);
 		this.setContentView(viewToLoad);
+		
+		
+		Button vkButton = (Button) findViewById(R.id.buttonVKChart);
+		vkButton.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {						
+				Intent i = new Intent(getApplicationContext(), VkActivity.class);				
+				i.putExtra(VkActivity.IMAGE_PATH, getBitmapFromView(mChart));
+				i.putExtra(VkActivity.IMAGE_DESK, ((DishType)chartTypeSpiner.getSelectedItem()).getDescription());
+				startActivity(i);
+			}
+		});
 
 		goalET = (EditText) findViewById(R.id.editTextLimitValue);
 		Button saveGoalButton = (Button) findViewById(R.id.buttonSetGoal);
@@ -114,6 +132,44 @@ public class WeightChartActivity extends Activity implements
 		initTimeIntervalSelector();
 
 	}
+	
+	public String getBitmapFromView(View view) {
+        //Define a bitmap with the same size as the view
+        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),Bitmap.Config.ARGB_8888);
+        //Bind a canvas to it
+        Canvas canvas = new Canvas(returnedBitmap);
+        //Get the view's background
+        Drawable bgDrawable =view.getBackground();
+        if (bgDrawable!=null) 
+            //has background drawable, then draw it on the canvas
+            bgDrawable.draw(canvas);
+        else 
+            //does not have background drawable, then draw white background on the canvas
+            canvas.drawColor(Color.WHITE);
+        // draw the view on the canvas
+        view.draw(canvas);
+        //return the bitmap
+        
+        String uriStr = Images.Media.insertImage(WeightChartActivity.this.getContentResolver(), returnedBitmap, "title", null); 
+        Uri uri = Uri.parse(uriStr);
+        return getRealPathFromURI(this, uri);
+   
+    }
+	
+	public String getRealPathFromURI(Context context, Uri contentUri) {
+		  Cursor cursor = null;
+		  try { 
+		    String[] proj = { MediaStore.Images.Media.DATA };
+		    cursor = context.getContentResolver().query(contentUri,  proj, null, null, null);
+		    int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+		    cursor.moveToFirst();
+		    return cursor.getString(column_index);
+		  } finally {
+		    if (cursor != null) {
+		      cursor.close();
+		    }
+		  }
+		}
 
 	private void initTimeIntervalSelector() {
 		timePeriodRG = (SegmentedGroup) findViewById(R.id.weightChartTimeSegments);
@@ -122,7 +178,7 @@ public class WeightChartActivity extends Activity implements
 	}
 
 	private void initChartTypeSpiner() {
-		chartTypeSpiner = (Spinner) findViewById(R.id.SpinnerChartType);
+		chartTypeSpiner = (Spinner) findViewById(R.id.spinnerChartType);
 		// chartTypeSpiner
 		ArrayList<DishType> types = getChartTypes(this);
 		ArrayAdapter<DishType> adapter = new ArrayAdapter<DishType>(this,
