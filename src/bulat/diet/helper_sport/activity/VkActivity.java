@@ -13,6 +13,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,6 +21,7 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -78,7 +80,7 @@ public class VkActivity extends Activity{
 	                api=new Api(account.access_token, Constants.API_ID);
 	                postToWall();
 	                joinToGroup();
-	                onBackPressed();
+	               
 	            }
 	        }
 	    } 
@@ -247,6 +249,12 @@ public class VkActivity extends Activity{
 	    Runnable successRunnable=new Runnable(){
 	        public void run() {
 	            Toast.makeText(getApplicationContext(), getString(R.string.vk_toast), Toast.LENGTH_LONG).show();
+	            Date currDate = new Date();
+	            if(currDate.getTime()>SaveUtils.getEndPDate(getApplicationContext())){
+	            	SaveUtils.setEndPDate(currDate.getTime() + 30 * DateUtils.DAY_IN_MILLIS, getApplicationContext());
+	            	SaveUtils.setUseFreeAbonement(true, getApplicationContext());
+	    		}
+	            onBackPressed();
 	        }
 	    };
 	    	

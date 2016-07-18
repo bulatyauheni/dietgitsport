@@ -12,7 +12,7 @@
         android:layout_height="fill_parent"
         android:background="@color/main_color"
         android:orientation="vertical" >
-
+ 		
         <RelativeLayout
             android:id="@+id/relativeLayout3"
             android:layout_width="fill_parent"
@@ -49,6 +49,16 @@
                 android:textColor="@color/text_color"
                 android:textSize="17dip" >
             </TextView>
+            
+            <Button
+                android:id="@+id/buttonVKChart"
+                android:layout_width="45dip"
+                android:layout_height="45dip"
+                android:background="@drawable/vk_button_xml"
+                android:clickable="true"
+                 android:gravity="center_vertical"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"/>
         </RelativeLayout>
 
         <LinearLayout
@@ -68,6 +78,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/chartsLayout"
             android:layout_width="match_parent"
             android:layout_height="180dip"
             android:orientation="horizontal" >
@@ -84,7 +95,13 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
         </LinearLayout>
-
+		<TextView 
+		    android:id="@+id/successInPercentageTV"
+		    android:layout_height="wrap_content"
+		    android:layout_width="match_parent"
+		    android:text="asdasd"
+		    android:textColor="@color/header_color"
+		    android:gravity="center_horizontal"/>"
         <bulat.diet.helper_sport.controls.SegmentedGroup
             android:id="@+id/segmented2"
             android:layout_width="match_parent"

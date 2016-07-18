@@ -38,7 +38,7 @@
 	<string name="bad_search">Ничего не найдено :(</string>
 	
 	<string name="idealCheet">Идеальный баланс</string>
-	<string name="yourCheet">Ваш баланс</string>
+	<string name="yourCheet">Мой баланс</string>
 	<string name="yes">Да</string>
 	<string name="no">Нет</string>
 	<string name="dish_list">Список блюд</string>
@@ -294,7 +294,7 @@
 	<string name="payment_dialog_year">Оплатив абонемент на год вы сможете 365 дней пользоваться всем функционалом приложения. Вы согласны оплатить? </string>
 	<string name="payment_dialog_vipyear">Оплатив VIP абонемент вы сможете получать круглосуточную поддержку и заказывать новый функционал. Вы согласны оплатить? </string>
 	
-	<string name="payment_dialog_alert">Что бы продолжить использование Калькулятора Калорий SPORT вам необходимо оплатить абонемент на год или на месяц. </string>
+	<string name="payment_dialog_alert">Что бы продолжить использование Калькулятора Калорий SPORT вам необходимо купить абонемент. </string>
 	<string name="last_notif_alert">Должен остаться хотя бы один приём пищи</string>
 	<string name="water_name">Вода</string>
 	
@@ -333,4 +333,10 @@
 		<string name="complain_plaese">Не могли бы вы рассказать о том, что вам не нравится?</string>
 		 <string name="vk_recomend">Рекомендую! Калькулятор Калорий - простая и эффективная програма.</string>
 		 <string name="vk_toast">Запись добавлена на вашей стене ВКонтакте</string>
+		 <string name="get_free_time">Не куплю</string>
+		  <string name="ok">Ок</string>
+		  <string name="success_in_percantage_text"  formatted="false" >Мой пищевой баланс на %.2f%% идеален</string>
+		  
+		 <string name="free_abonement_offer_text">Разместите ваши результаты на стене в ВКонтакте и получите бесплатный абонемент на месяц.</string>
+		 <string name="get_abonement_title">Получение абонемента</string>
 </resources>

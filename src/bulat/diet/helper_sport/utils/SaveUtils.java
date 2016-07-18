@@ -105,6 +105,7 @@ public class SaveUtils {
 	public static final String USER_IDEAL_PELVIS = "USER_IDEAL_PELVIS";
 	public static final String USER_IDEAL_WAIST = "USER_IDEAL_WAIST";
 	private static final String USER_RATE_APP = "USER_RATE_APP";
+	private static final String USER_USE_FREE_ABONEMENT = "USER_USE_FREE_ABONEMENT";
 
 	
 	public static void saveScrollPosition(int pos, Context context){
@@ -1391,6 +1392,19 @@ public class SaveUtils {
 		Editor editor = preferences.edit();				
 		editor.putBoolean(USER_RATE_APP, value);		
 		editor.commit();		
+	}
+	public static void setUseFreeAbonement(boolean value, Context context) {
+		SharedPreferences preferences = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		Editor editor = preferences.edit();				
+		editor.putBoolean(USER_USE_FREE_ABONEMENT, value);		
+		editor.commit();
+	}
+	
+	public static boolean isUseFreeAbonement(Context context) {
+		SharedPreferences preferences = PreferenceManager
+				.getDefaultSharedPreferences(context);				
+				return preferences.getBoolean(USER_USE_FREE_ABONEMENT, false);
 	}
 	
 }

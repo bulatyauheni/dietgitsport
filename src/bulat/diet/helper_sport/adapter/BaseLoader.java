@@ -30,6 +30,9 @@ public class BaseLoader {
 			Dish dish = null;
 			int count = 0;
 			int lastRow = SaveUtils.getNumOfRows(c);
+			if (lastRow == 0) {
+				DishListHelper.clearAll(c);
+			}
 			String msg = c.getString(R.string.loading_social);
 			while (reader.hasNext()) {
 				reader.beginObject();
@@ -86,6 +89,7 @@ public class BaseLoader {
 		List<String[]> base = new ArrayList<String[]>();
 
 		try {
+			SportListHelper.clearAll(c);
 			String[] mass; // While the BufferedReader readLine is not null
 			while ((readLine = br.readLine()) != null) {
 				mass = readLine.split("\\t");

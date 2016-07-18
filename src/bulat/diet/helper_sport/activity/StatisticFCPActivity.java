@@ -4,8 +4,17 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.provider.MediaStore.Images;
 import android.text.SpannableString;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +25,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Spinner;
@@ -41,23 +51,26 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 public class StatisticFCPActivity extends Activity implements
 		OnChartValueSelectedListener, OnCheckedChangeListener {
 
-	private static final String Fat = "f";
-	private static final String Carbon = "c";
-	private static final String Protein = "p";
-	private int lifestyle = 0;
-	private float valuesNormal[] = { 1, 4, 1 };
-	private float valuesFith[] = { 1, 5, 1 };
-	private float valuesBrain[] = { 1, 3, (float) 0.8 };
-	private float valuesCustom[] = { 0, 0, 0 };
-	private float values2[] = { 0, 0, 0 };
-	private float values[] = { 0, 0, 0 };
-	private PieChart mChartIdeal;
-	private PieChart mChartClient;
-	private TextView tvX, tvY;
-	private boolean isCustomMode = false;
-	private String[] mParties;
-	private Spinner spinnerDiet;
-	private SegmentedGroup timePeriodRG;
+	protected static final String Fat = "f";
+	protected static final String Carbon = "c";
+	protected static final String Protein = "p";
+	protected int lifestyle = 0;
+	protected float valuesNormal[] = { 1, 4, 1 };
+	protected float valuesFith[] = { 1, 5, 1 };
+	protected float valuesBrain[] = { 1, 3, (float) 0.8 };
+	protected float valuesCustom[] = { 0, 0, 0 };
+	protected float values2[] = { 0, 0, 0 };
+	protected float values[] = { 0, 0, 0 };
+	protected PieChart mChartIdeal;
+	protected PieChart mChartClient;
+	protected TextView tvX, tvY;
+	protected boolean isCustomMode = false;
+	protected String[] mParties;
+	protected Spinner spinnerDiet;
+	protected SegmentedGroup timePeriodRG;
+	protected LinearLayout chartsLayout;
+	protected TextView successInPercentageTV;
+	private Activity activity;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +80,12 @@ public class StatisticFCPActivity extends Activity implements
 				getString(R.string.carbon), getString(R.string.fat) };
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		View viewToLoad = LayoutInflater.from(this.getParent().getParent())
+		try {
+			activity = this.getParent().getParent();
+		} catch (Exception ex) {
+			activity = this;
+		}
+		View viewToLoad = LayoutInflater.from(activity)
 				.inflate(R.layout.activity_piechart, null);
 		setContentView(viewToLoad);
 
@@ -79,7 +97,20 @@ public class StatisticFCPActivity extends Activity implements
 		});
 				
 		initDietTypeSpinner();
-				
+		chartsLayout = (LinearLayout) 	findViewById (R.id.chartsLayout);
+		
+		Button vkButton = (Button) findViewById(R.id.buttonVKChart);
+		vkButton.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {						
+				Intent i = new Intent(getApplicationContext(), VkActivity.class);				
+				i.putExtra(VkActivity.IMAGE_PATH, getBitmapFromView(chartsLayout));
+				i.putExtra(VkActivity.IMAGE_DESK, successInPercentageTV.getText().toString());
+				startActivity(i);
+			}
+		});
+
+		
 		mChartIdeal = (PieChart) findViewById(R.id.chart1);
 		initChart(mChartIdeal);
 		mChartIdeal.setCenterText(getString(R.string.idealCheet));
@@ -90,8 +121,57 @@ public class StatisticFCPActivity extends Activity implements
 		
 		initTimeIntervalSelector();
 
+		successInPercentageTV = (TextView) findViewById(R.id.successInPercentageTV);
+		
 	}
-	private void initDietTypeSpinner() {
+	
+	private float calculateSuccess() {
+		float sum1 = values[0] + values[1] + values[2];
+		float sum2 = values2[0] + values2[1] + values2[2];
+	
+		
+		float res = 100* (1 - (Math.abs(values[0]/sum1 - values2[0]/sum2) + Math.abs(values[1]/sum1  - values2[1]/sum2) + Math.abs(values[2]/sum1  - values2[2]/sum2)));
+		return res;
+	}
+
+	public String getBitmapFromView(View view) {
+        //Define a bitmap with the same size as the view
+        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),Bitmap.Config.ARGB_8888);
+        //Bind a canvas to it
+        Canvas canvas = new Canvas(returnedBitmap);
+        //Get the view's background
+        Drawable bgDrawable =view.getBackground();
+        if (bgDrawable!=null) 
+            //has background drawable, then draw it on the canvas
+            bgDrawable.draw(canvas);
+        else 
+            //does not have background drawable, then draw white background on the canvas
+            canvas.drawColor(Color.WHITE);
+        // draw the view on the canvas
+        view.draw(canvas);
+        //return the bitmap
+        
+        String uriStr = Images.Media.insertImage(this.getContentResolver(), returnedBitmap, "title", null); 
+        Uri uri = Uri.parse(uriStr);
+        return getRealPathFromURI(this, uri);
+   
+    }
+	
+	public String getRealPathFromURI(Context context, Uri contentUri) {
+		  Cursor cursor = null;
+		  try { 
+		    String[] proj = { MediaStore.Images.Media.DATA };
+		    cursor = context.getContentResolver().query(contentUri,  proj, null, null, null);
+		    int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+		    cursor.moveToFirst();
+		    return cursor.getString(column_index);
+		  } finally {
+		    if (cursor != null) {
+		      cursor.close();
+		    }
+		  }
+		}
+	protected void initDietTypeSpinner() {
 		ArrayList<DishType> time = new ArrayList<DishType>();
 		time.add(new DishType(0, getString(R.string.balance_norm)));
 		time.add(new DishType(1, getString(R.string.balance_fith)));
@@ -128,12 +208,12 @@ public class StatisticFCPActivity extends Activity implements
 		spinnerDiet.setOnItemSelectedListener(spinnerListener);
 	}
 	
-	private void initTimeIntervalSelector() {
+	protected void initTimeIntervalSelector() {
 		timePeriodRG = (SegmentedGroup) findViewById(R.id.segmented2);		
 		timePeriodRG.setOnCheckedChangeListener(this);
 		timePeriodRG.check(timePeriodRG.getChildAt(2).getId());
 	}
-	private void initChart(PieChart mChart) {
+	protected void initChart(PieChart mChart) {
 		// TODO Auto-generated method stub
 		mChart.setUsePercentValues(true);
 		mChart.setDescription("");
@@ -198,7 +278,8 @@ public class StatisticFCPActivity extends Activity implements
 
 		values2 = getValues(TodayDishHelper.getStatisticFCP(this, 30));
 		setClientsPersents(values2);
-
+		successInPercentageTV.setText(String.format(getString(R.string.success_in_percantage_text), calculateSuccess()) );
+		
 	}
 
 	private void setClientsPersents(float[] values) {
