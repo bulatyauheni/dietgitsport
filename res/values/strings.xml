@@ -283,6 +283,7 @@
 	<string name="count_num">раз</string>
 	<string name="statistic_top10">Топ 10 за месяц</string>
 	<string name="payment">Оплата</string>
+	<string name="paymenterror">Проблема с оплатой</string>
 	<string name="paymentm">Абонемент на месяц</string>
 	<string name="paymentspec">Абонемент по акции</string>
 	<string name="payment3m">Абонемент на 3 месяца</string>
@@ -331,6 +332,7 @@
 		<string name="disagree">Не сейчас</string>
 		
 		<string name="complain_plaese">Не могли бы вы рассказать о том, что вам не нравится?</string>
+		<string name="complain_for_payment">Если у вас не получается оплатить абонемент, либо у вас есть другой вопрос - просто напишите мне на почту, вместе мы найдем подходящее решение.</string>
 		 <string name="vk_recomend">Рекомендую! Калькулятор Калорий - простая и эффективная програма.</string>
 		 <string name="vk_toast">Запись добавлена на вашей стене ВКонтакте</string>
 		 <string name="get_free_time">Не куплю</string>

@@ -49,6 +49,8 @@ import bulat.diet.helper_sport.utils.CustomAlertDialogBuilder;
 import bulat.diet.helper_sport.utils.SaveUtils;
 
 import com.github.mikephil.charting.charts.CombinedChart;
+import com.github.mikephil.charting.components.LimitLine;
+import com.github.mikephil.charting.components.LimitLine.LimitLabelPosition;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.XAxis.XAxisPosition;
 import com.github.mikephil.charting.components.YAxis;
@@ -59,6 +61,7 @@ import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.data.MyMarkerView;
 import com.github.mikephil.charting.formatter.YAxisValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
@@ -74,6 +77,8 @@ public class WeightChartActivity extends Activity implements
 	private Spinner chartTypeSpiner;
 	private SegmentedGroup timePeriodRG;
 	private boolean readyToRate;
+	private float min;
+	private float max;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -238,43 +243,77 @@ public class WeightChartActivity extends Activity implements
 	private void initChart() {
 		mChart = (CombinedChart) findViewById(R.id.chart1);
 		mChart.setOnChartValueSelectedListener(this);
-		mChart.setDescription("");
+		try {
+			mChart.setDescription(((DishType)chartTypeSpiner.getSelectedItem()).getDescription());
+		} catch (Exception e) {
+			mChart.setDescription ("");
+		}
 		mChart.setBackgroundColor(Color.WHITE);
 		mChart.setDrawGridBackground(true);
 		mChart.setDrawBarShadow(false);
-
+        mChart.setDragEnabled(true);
+        mChart.setScaleEnabled(true);
+      //  mChart.setPinchZoom(true);
+		LimitLine ll1 = new LimitLine(Float.valueOf(goalET.getText().toString()), getString(R.string.idealWeight));
+        ll1.setLineWidth(4f);
+        ll1.enableDashedLine(10f, 10f, 0f);
+        ll1.setLabelPosition(LimitLabelPosition.RIGHT_BOTTOM);
+        ll1.setTextSize(10f);
 		// draw bars behind lines
 		mChart.setDrawOrder(new CombinedChart.DrawOrder[] {
 				CombinedChart.DrawOrder.BAR, CombinedChart.DrawOrder.BUBBLE,
 				CombinedChart.DrawOrder.CANDLE, CombinedChart.DrawOrder.LINE,
 				CombinedChart.DrawOrder.SCATTER });
+		
+		// create a custom MarkerView (extend MarkerView) and specify the layout
+        // to use for it
+        MyMarkerView mv = new MyMarkerView(this, R.layout.custom_marker_view);
+
+        // set the marker to the chart
+        mChart.setMarkerView(mv);
 
 		YAxis rightAxis = mChart.getAxisRight();
 		rightAxis.setDrawGridLines(false);
-		rightAxis.setAxisMinValue(20f); // this replaces setStartAtZero(true)
-
+		rightAxis.setEnabled(false);
+		
 		YAxis leftAxis = mChart.getAxisLeft();
+		leftAxis.removeAllLimitLines();
+		leftAxis.addLimitLine(ll1);
 		leftAxis.setDrawGridLines(false);
-		leftAxis.setAxisMinValue(20f); // this replaces setStartAtZero(true)
+		leftAxis.setAxisMinValue(getMin()); // this replaces setStartAtZero(true)
+		leftAxis.setAxisMaxValue(getMax()); // this replaces setStartAtZero(true)
 
 		XAxis xAxis = mChart.getXAxis();
 		xAxis.setPosition(XAxisPosition.BOTH_SIDED);
 	}
 
+	
+
+	private float getMax() {
+		float goal = Float.valueOf(goalET.getText().toString());
+		return goal > max ? goal+5:max+5;
+	}
+
+	private float getMin() {
+		float goal = Float.valueOf(goalET.getText().toString());
+		return goal < min ? goal-10:min-10;
+	}
+
 	private void drawChart(int chartType) {
 		CombinedData data = new CombinedData(mDates);
 
-		data.setData(generateLineData());
+		//data.setData(generateLineData());
 		data.setData(generateBarData(chartType));
 		// data.setData(generateBubbleData());
 		// data.setData(generateScatterData());
 		// data.setData(generateCandleData());
+		initChart();
 		if (mDates == null || mDates.length == 0) {
 
 		} else {
 			mChart.setData(data);
 			mChart.invalidate();
-			mChart.animateXY(1000, 1000);
+			mChart.animateX(1000);
 		}
 	}
 
@@ -317,7 +356,7 @@ public class WeightChartActivity extends Activity implements
 					index));
 
 		LineDataSet set = new LineDataSet(entries,
-				getString(R.string.idealWeight));
+				getString(R.string.currentWeight));
 		set.setColor(Color.rgb(240, 238, 70));
 		set.setLineWidth(2.5f);
 		set.setCircleColor(Color.rgb(240, 238, 70));
@@ -334,55 +373,76 @@ public class WeightChartActivity extends Activity implements
 
 		return d;
 	}
-
-	private BarData generateBarData(int chartType) {
-		BarEntry previousEntry;
-		BarData d = new BarData();
-		ArrayList<BarEntry> entries = new ArrayList<BarEntry>();
+	private void setMinMax(float tempVal) {
+		min = tempVal<min ? tempVal:min;
+		max = tempVal>max ? tempVal:max;
+	}
+	private LineData generateBarData(int chartType) {
+		LineData d = new LineData();
+		
+		min = 200;
+		max= 0;
+		ArrayList<Entry> entries = new ArrayList<Entry>();
 		for (int index = 0; index < itemcount; index++)
 			switch (chartType) {
 			case 1:
-				entries.add(new BarEntry(days.get(index).getBodyWeight(), index));
+				entries.add(new Entry(days.get(index).getBodyWeight(), index));
+				setMinMax(days.get(index).getBodyWeight());
 				break;
 			case 2:
-				entries.add(new BarEntry(days.get(index).getChest(), index));
+				entries.add(new Entry(days.get(index).getChest(), index));
+				setMinMax(days.get(index).getChest());
 				break;
 			case 3:
-				entries.add(new BarEntry(days.get(index).getBiceps(), index));
+				entries.add(new Entry(days.get(index).getBiceps(), index));
+				setMinMax(days.get(index).getBiceps());
 				break;
 			case 4:
-				entries.add(new BarEntry(days.get(index).getForearm(), index));
+				entries.add(new Entry(days.get(index).getForearm(), index));
+				setMinMax(days.get(index).getForearm());
 				break;
 			case 5:
-				entries.add(new BarEntry(days.get(index).getHip(), index));
+				entries.add(new Entry(days.get(index).getHip(), index));
+				setMinMax(days.get(index).getHip());
 				break;
 			case 6:
-				entries.add(new BarEntry(days.get(index).getNeck(), index));
+				entries.add(new Entry(days.get(index).getNeck(), index));
+				setMinMax(days.get(index).getNeck());
 				break;
 			case 7:
-				entries.add(new BarEntry(days.get(index).getShin(), index));
+				entries.add(new Entry(days.get(index).getShin(), index));
+				setMinMax(days.get(index).getShin());
 				break;
 			case 8:
-				entries.add(new BarEntry(days.get(index).getPelvis(), index));
+				entries.add(new Entry(days.get(index).getPelvis(), index));
+				setMinMax(days.get(index).getPelvis());
 				break;
 			case 9:
-				entries.add(new BarEntry(days.get(index).getWaist(), index));
+				entries.add(new Entry(days.get(index).getWaist(), index));
+				setMinMax(days.get(index).getWaist());
 				break;
 			default:
 				break;
 			}
-
-		BarDataSet set = new BarDataSet(entries,
+		
+		LineDataSet set = new LineDataSet(entries,
 				getString(R.string.currentWeight));
-		set.setColor(Color.rgb(60, 220, 78));
-		set.addColor(Color.rgb(255, 38, 49));
-		set.setValueTextColor(Color.rgb(60, 220, 78));
+		set.setColor(Color.rgb(140, 138, 70));
+		set.setLineWidth(2.5f);
+		set.setCircleColor(Color.rgb(240, 38, 70));
+		set.setCircleRadius(5f);
+		set.setFillColor(Color.rgb(40, 238, 70));
+		set.setDrawCubic(false);
+		set.setDrawValues(true);
 		set.setValueTextSize(10f);
+		set.setValueTextColor(Color.rgb(40, 40, 40));
+		set.setAxisDependency(YAxis.AxisDependency.LEFT);
+		set.setDrawValues(true);
+		set.setDrawFilled(true);
 		d.addDataSet(set);
 
-		set.setAxisDependency(YAxis.AxisDependency.LEFT);
-		set.setBarSpacePercent(20);
 		return d;
+
 	}
 
 	@Override

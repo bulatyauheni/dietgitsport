@@ -388,7 +388,7 @@ public static float getBodyWeightByDate(long date, Context context) {
 		"Select "+ DishProvider.TODAY_DISH_DATE + " , sum("+DishProvider.TODAY_DISH_CALORICITY +") as val, sum(fatw) as fat, sum(carbw) as carbon, sum(protw) as protein, "+
         " sum(clearweight) as weight, sum(waterweight) as woterweight, _id, "+DishProvider.TODAY_DISH_ID+" as bodyweight, count(_id) as count ,"+ DishProvider.TODAY_DISH_DATE_LONG +
         ","+ DishProvider.TODAY_BICEPS +  ","+ DishProvider.TODAY_CHEST +  ","+ DishProvider.TODAY_NECK +  ","+ DishProvider.TODAY_FOREARM +  ","+ DishProvider.TODAY_PELVIS + 
-        ","+ DishProvider.TODAY_SHIN +","+ DishProvider.TODAY_WAIST +","+ DishProvider.TODAY_HIP +
+        ","+ DishProvider.TODAY_SHIN +","+ DishProvider.TODAY_WAIST +","+ DishProvider.TODAY_HIP +","+ DishProvider.TODAY_DISH_SERVER_ID +
         " from day_dishes as a " +
         "left JOIN (SELECT _id as _id2, "+DishProvider.TODAY_DISH_WEIGHT+" as clearweight , "+DishProvider.TODAY_DISH_FAT +" as fatw, "+DishProvider.TODAY_DISH_CARBON +" as carbw, "+DishProvider.TODAY_DISH_PROTEIN +" as protw" +
         		" FROM    day_dishes"+
