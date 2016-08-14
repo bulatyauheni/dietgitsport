@@ -556,6 +556,39 @@ public class DishActivity extends BaseActivity {
 
 	private void initDishTable() {
 		if (c.getCount() > 0) {
+			for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+			    // do what you need with the cursor here
+				Log.e("Cursor",c.getString(c
+						.getColumnIndex(DishProvider.TODAY_DISH_CALORICITY)) );
+				if (c.getString(c
+						.getColumnIndex(DishProvider.TODAY_DISH_CALORICITY)) != null) {
+					
+					int val = Integer.parseInt(c.getString(c
+							.getColumnIndex(DishProvider.TODAY_DISH_CALORICITY)));
+					
+					if (val > 0) {
+						sum = sum + val;
+					} else {
+						sumLoose = sumLoose + val;
+					}
+					
+					Log.e("Cursor category",c.getString(c.getColumnIndex(DishProvider.TODAY_CATEGORY)) );
+					if (!c.getString(c.getColumnIndex(DishProvider.TODAY_CATEGORY))
+							.equals("0")) {
+						sumF = sumF
+								+ c.getFloat(c
+										.getColumnIndex(DishProvider.TODAY_DISH_FAT));
+						sumC = sumC
+								+ c.getFloat(c
+										.getColumnIndex(DishProvider.TODAY_DISH_CARBON));
+						sumP = sumP
+								+ c.getFloat(c
+										.getColumnIndex(DishProvider.TODAY_DISH_PROTEIN));
+					}
+				}
+			}
+		
+		/*if (c.getCount() > 0) {
 			c.moveToFirst();
 			if (c.getString(c
 					.getColumnIndex(DishProvider.TODAY_DISH_CALORICITY)) != null) {
@@ -599,7 +632,7 @@ public class DishActivity extends BaseActivity {
 							+ c.getFloat(c
 									.getColumnIndex(DishProvider.TODAY_DISH_PROTEIN));
 				}
-			}
+			}*/
 			TextView tv = (TextView) findViewById(R.id.textViewTotalValue);
 			TextView tvLoose = (TextView) findViewById(R.id.textViewTotalLooseValue);
 			TextView tvF = (TextView) findViewById(R.id.textViewFatTotal);
