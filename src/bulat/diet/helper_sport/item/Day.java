@@ -2,6 +2,7 @@ package bulat.diet.helper_sport.item;
 
 public class Day {
 	private String name;
+	private String dateStr;
 	private long dateInt;
 	private float bodyWeight;
 	private float chest;
@@ -134,5 +135,12 @@ public class Day {
 	}
 	private int caloricity;
 	private int weight;
+
+	public String getDateStr() {
+		return dateStr;
+	}
+	public void setDateStr(String dateStr) {
+		this.dateStr = dateStr;
+	}
 	
 }

@@ -225,6 +225,8 @@ public class NewTemplateActivity extends BaseActivity {
 									timeMM.getText());
 						}
 						if (Integer.valueOf(absCalorisity.getText().toString()) >= 0) {
+							//jast > 0  couse 0 - is the sport category
+							copyIntent.putExtra(AddTodayDishActivity.DISH_CATEGORY,	40);
 							copyIntent.setClass(NewTemplateActivity.this, AddTodayDishActivity.class);
 							copyIntent.putExtra(AddTodayDishActivity.DISH_WEIGHT,
 									Integer.valueOf(weight.getText().toString()));
@@ -445,38 +447,43 @@ private OnClickListener saveListener = new OnClickListener() {
 	private void initDishTable(){
 		if (c.getCount() > 0) {
 			c.moveToFirst();
-			if (c.getString(c
-					.getColumnIndex(DishProvider.TODAY_DISH_CALORICITY)) != null) {
-				sum = sum
-						+ Integer
-								.parseInt(c.getString(c
-										.getColumnIndex(DishProvider.TODAY_DISH_CALORICITY)));
-
-				sumF = sumF
-						+ c.getFloat(c
-								.getColumnIndex(DishProvider.TODAY_DISH_FAT));
-				sumC = sumC
-						+ c.getFloat(c
-								.getColumnIndex(DishProvider.TODAY_DISH_CARBON));
-				sumP = sumP
-						+ c.getFloat(c
-								.getColumnIndex(DishProvider.TODAY_DISH_PROTEIN));
+			if (c.getString(c.getColumnIndex(DishProvider.TODAY_DISH_CALORICITY)) != null) {
+				int val = Integer.parseInt(c.getString(c
+						.getColumnIndex(DishProvider.TODAY_DISH_CALORICITY)));
+				if (val > 0) {
+					sum = sum + val;
+				}
+				if (!c.getString(c.getColumnIndex(DishProvider.TODAY_CATEGORY))
+						.equals("0")) {
+					sumF = sumF
+							+ c.getFloat(c
+									.getColumnIndex(DishProvider.TODAY_DISH_FAT));
+					sumC = sumC
+							+ c.getFloat(c
+									.getColumnIndex(DishProvider.TODAY_DISH_CARBON));
+					sumP = sumP
+							+ c.getFloat(c
+									.getColumnIndex(DishProvider.TODAY_DISH_PROTEIN));
+				}
 			}
 			while (c.moveToNext()) {
+				int val = Integer.parseInt(c.getString(c
+						.getColumnIndex(DishProvider.TODAY_DISH_CALORICITY)));
+				if (val > 0) {
+					sum = sum + val;
+				}
 
-				sum = sum
-						+ Integer
-								.parseInt(c.getString(c
-										.getColumnIndex(DishProvider.TODAY_DISH_CALORICITY)));
-				sumF = sumF
-						+ c.getFloat(c
-								.getColumnIndex(DishProvider.TODAY_DISH_FAT));
-				sumC = sumC
-						+ c.getFloat(c
-								.getColumnIndex(DishProvider.TODAY_DISH_CARBON));
-				sumP = sumP
-						+ c.getFloat(c
-								.getColumnIndex(DishProvider.TODAY_DISH_PROTEIN));
+				if (val >= 0) {
+					sumF = sumF
+							+ c.getFloat(c
+									.getColumnIndex(DishProvider.TODAY_DISH_FAT));
+					sumC = sumC
+							+ c.getFloat(c
+									.getColumnIndex(DishProvider.TODAY_DISH_CARBON));
+					sumP = sumP
+							+ c.getFloat(c
+									.getColumnIndex(DishProvider.TODAY_DISH_PROTEIN));
+				}
 			}
 			TextView tv = (TextView) findViewById(R.id.textViewTotalValue);			
 			TextView tvF = (TextView) findViewById(R.id.textViewFatTotal);			

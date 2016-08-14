@@ -68,12 +68,17 @@ public class TodayDishHelper {
 		return null;		
 }
 	
-	public static Map<String, Float> getStatisticFCP(Context context) {		
+	public static Map<String, Float> getStatisticFCP(Context context, int days) {		
+		return getStatisticFCP(context,  0,  days);
+	}
+	
+	public static Map<String, Float> getStatisticFCP(Context context, int dayFrom, int dayTo) {		
 		ContentResolver cr = context.getContentResolver();
-		String selection = DishProvider.TODAY_DISH_DATE_LONG + ">" + "? and " + DishProvider.TODAY_IS_DAY + "<> 1 and " + DishProvider.TODAY_TYPE + "<>''";
+		String selection = DishProvider.TODAY_DISH_DATE_LONG + "<" + "? and " + DishProvider.TODAY_DISH_DATE_LONG + ">" + "? and " + DishProvider.TODAY_IS_DAY + "<> 1 and " + DishProvider.TODAY_TYPE + "<>''";
 		 String[] columns = new String[] { DishProvider.TODAY_TYPE, " sum("+DishProvider.TODAY_DISH_FAT +") as fat"," sum("+DishProvider.TODAY_DISH_PROTEIN +") as protein"," sum("+DishProvider.TODAY_DISH_CARBON +") as carbon"};
-		 Long date = ((new Date()).getTime() - 30*DateUtils.DAY_IN_MILLIS) ;
-		 String[] val = new String[] {date.toString()};
+		 Long dateTo = ((new Date()).getTime() - dayTo*DateUtils.DAY_IN_MILLIS) ;
+		 Long dateFrom = ((new Date()).getTime() - dayFrom*DateUtils.DAY_IN_MILLIS) ;
+		 String[] val = new String[] {dateFrom.toString(), dateTo.toString()};
 		 Cursor c  = null;
 		 try {
 			 c = cr.query(DishProvider.TODAYDISH_CONTENT_URI, columns, selection, val, DishProvider.TODAY_DISH_DATE_LONG + " DESC");
@@ -377,11 +382,13 @@ public static float getBodyWeightByDate(long date, Context context) {
 		}
 		
 		ContentResolver cr = context.getContentResolver();
-		//need to change DishProvider.TODAY_DISH_DATE to DishProvider.TODAY_DISH_DATE_LONG in other version
+		//need to change DishProvider.TODAY_DISH_DATE to DishProvider.TODAY_DISH_DATE_LONG in other version	
 				
 		Cursor c =  allDishesDB.rawQuery(
 		"Select "+ DishProvider.TODAY_DISH_DATE + " , sum("+DishProvider.TODAY_DISH_CALORICITY +") as val, sum(fatw) as fat, sum(carbw) as carbon, sum(protw) as protein, "+
         " sum(clearweight) as weight, sum(waterweight) as woterweight, _id, "+DishProvider.TODAY_DISH_ID+" as bodyweight, count(_id) as count ,"+ DishProvider.TODAY_DISH_DATE_LONG +
+        ","+ DishProvider.TODAY_BICEPS +  ","+ DishProvider.TODAY_CHEST +  ","+ DishProvider.TODAY_NECK +  ","+ DishProvider.TODAY_FOREARM +  ","+ DishProvider.TODAY_PELVIS + 
+        ","+ DishProvider.TODAY_SHIN +","+ DishProvider.TODAY_WAIST +","+ DishProvider.TODAY_HIP +","+ DishProvider.TODAY_DISH_SERVER_ID +
         " from day_dishes as a " +
         "left JOIN (SELECT _id as _id2, "+DishProvider.TODAY_DISH_WEIGHT+" as clearweight , "+DishProvider.TODAY_DISH_FAT +" as fatw, "+DishProvider.TODAY_DISH_CARBON +" as carbw, "+DishProvider.TODAY_DISH_PROTEIN +" as protw" +
         		" FROM    day_dishes"+
@@ -394,14 +401,16 @@ public static float getBodyWeightByDate(long date, Context context) {
 	}
 	
 	public static List<Day> getDaysStat(Context context) {
-		
+		return getDaysStat (context, 30);
+	}
+	
+	public static List<Day> getDaysStat(Context context, int days) {
+
 		//'SELECT date, sum(value) as value  FROM dishs GROUP BY date ORDER BY id';
-		
 		ContentResolver cr = context.getContentResolver();
-		String selection = DishProvider.TODAY_IS_DAY + "<>" + "?" + ") GROUP BY (" + DishProvider.TODAY_DISH_DATE;
-		 String[] columns = new String[] { DishProvider.TODAY_DISH_DATE, "sum("+DishProvider.TODAY_DISH_CALORICITY +") as val, sum("+DishProvider.TODAY_DISH_WEIGHT +") as weight, _id, "+DishProvider.TODAY_DISH_ID+" as bodyweight, "+  DishProvider.TODAY_DISH_DATE_LONG, DishProvider.TODAY_FOREARM, DishProvider.TODAY_WAIST, DishProvider.TODAY_HIP, DishProvider.TODAY_NECK, DishProvider.TODAY_SHIN, DishProvider.TODAY_PELVIS, DishProvider.TODAY_BICEPS, DishProvider.TODAY_CHEST };
-		 String[] val = new String[] { "0" };
-		Cursor c = cr.query(DishProvider.TODAYDISH_CONTENT_URI, columns, selection, val, DishProvider.TODAY_DISH_DATE_LONG + " DESC LIMIT 30");
+		String selection = DishProvider.TODAY_DISH_ID + " <> 0 and " + DishProvider.TODAY_CHEST +" <> 0 " + ") GROUP BY (" + DishProvider.TODAY_DISH_DATE;
+		 String[] columns = new String[] { DishProvider.TODAY_DISH_DATE, "sum("+DishProvider.TODAY_DISH_CALORICITY +") as val, sum("+DishProvider.TODAY_DISH_WEIGHT +") as bodyweight, _id, "+DishProvider.TODAY_DISH_ID+" as bodyweight, "+  DishProvider.TODAY_DISH_DATE_LONG, DishProvider.TODAY_FOREARM, DishProvider.TODAY_WAIST, DishProvider.TODAY_HIP, DishProvider.TODAY_NECK, DishProvider.TODAY_SHIN, DishProvider.TODAY_PELVIS, DishProvider.TODAY_BICEPS, DishProvider.TODAY_CHEST };
+		Cursor c = cr.query(DishProvider.TODAYDISH_CONTENT_URI, columns, selection, null, DishProvider.TODAY_DISH_DATE_LONG + " DESC LIMIT " + days + " "); //getDaysNew(context);
 		ArrayList<Day> dayList = new ArrayList<Day>();
 		Day d = new Day();
 		try {
@@ -409,9 +418,14 @@ public static float getBodyWeightByDate(long date, Context context) {
 			while (c.moveToNext())
 	        {
 				d = new Day();
-				d.setBodyWeight(Float.parseFloat(c.getString(4).replace(",", ".")));
-				d.setDateInt(Long.parseLong(c.getString(5)));
+				d.setBodyWeight(Float.parseFloat(c.getString(c
+						.getColumnIndex("bodyweight")).replace(",", ".")));
+				d.setDateInt(Long.parseLong(c.getString(c
+						.getColumnIndex(DishProvider.TODAY_DISH_DATE_LONG))));
 				
+				d.setDateStr(c.getString(c
+						.getColumnIndex(DishProvider.TODAY_DISH_DATE)));
+
 				d.setBiceps(Float.parseFloat(c.getString(c
 						.getColumnIndex(DishProvider.TODAY_BICEPS))) + VolumeInfo.MIN_CHEST);
 				d.setChest(Float.parseFloat(c.getString(c

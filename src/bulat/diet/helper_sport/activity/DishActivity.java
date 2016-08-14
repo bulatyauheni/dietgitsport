@@ -145,8 +145,7 @@ public class DishActivity extends BaseActivity {
 									TextView id = (TextView) arg1
 											.findViewById(R.id.textViewId);
 									TodayDish dishForCopy = TodayDishHelper
-											.getDishById(id.getText()
-													.toString(),
+											.getDishById(id.getText().toString(),
 													DishActivity.this);
 									TextView name = (TextView) arg1
 											.findViewById(R.id.textViewDishName);
@@ -185,39 +184,31 @@ public class DishActivity extends BaseActivity {
 											name.getText().toString());
 									copyIntent.putExtra(
 											AddTodayDishActivity.DISH_CATEGORY,
-											Integer.parseInt(dishForCopy
-													.getCategory()));
-									copyIntent
-											.putExtra(
-													AddTodayDishActivity.DISH_STAT_TYPE,
-													dishForCopy.getType());
+											Integer.parseInt(dishForCopy.getCategory()));
+									copyIntent.putExtra(
+											AddTodayDishActivity.DISH_STAT_TYPE,
+											dishForCopy.getType());
 									copyIntent.putExtra(
 											AddTodayDishActivity.DISH_NAME,
 											name.getText().toString());
-									copyIntent
-											.putExtra(
-													AddTodayDishActivity.DISH_CALORISITY,
-													Integer.valueOf(calorisity
-															.getText()
-															.toString()));
 									copyIntent.putExtra(
-											AddTodayDishActivity.DISH_FAT, fat
-													.getText().toString());
+											AddTodayDishActivity.DISH_CALORISITY,
+											Integer.valueOf(calorisity.getText().toString()));
+									copyIntent.putExtra(
+											AddTodayDishActivity.DISH_FAT, 
+											fat.getText().toString());
 									copyIntent.putExtra(
 											AddTodayDishActivity.DISH_CARBON,
 											carbon.getText().toString());
 									copyIntent.putExtra(
 											AddTodayDishActivity.DISH_PROTEIN,
 											protein.getText().toString());
-									copyIntent
-											.putExtra(
-													AddTodayDishActivity.DISH_ABSOLUTE_CALORISITY,
-													Integer.valueOf(absCalorisity
-															.getText()
-															.toString()));
+									copyIntent.putExtra(
+											AddTodayDishActivity.DISH_ABSOLUTE_CALORISITY,
+											Integer.valueOf(absCalorisity.getText().toString()));
 									copyIntent.putExtra(
 											AddTodayDishActivity.ID,
-											id.getText());
+											id.getText().toString());
 									if (time.getText() != null) {
 										copyIntent.putExtra(
 												AddTodayDishActivity.DISH_TIME,
@@ -227,24 +218,21 @@ public class DishActivity extends BaseActivity {
 										copyIntent
 												.putExtra(
 														AddTodayDishActivity.DISH_TIME_HH,
-														timeHH.getText());
+														timeHH.getText().toString());
 									}
 									if (timeMM.getText() != null) {
 										copyIntent
 												.putExtra(
 														AddTodayDishActivity.DISH_TIME_MM,
-														timeMM.getText());
+														timeMM.getText().toString());
 									}
-									if (Integer.valueOf(absCalorisity.getText()
-											.toString()) >= 0) {
+									if (Integer.valueOf(absCalorisity.getText().toString()) >= 0) {
 										copyIntent.setClass(DishActivity.this,
 												AddTodayDishActivity.class);
 										copyIntent
 												.putExtra(
 														AddTodayDishActivity.DISH_WEIGHT,
-														Integer.valueOf(weight
-																.getText()
-																.toString()));
+														Integer.valueOf(weight.getText().toString()));
 									} else {
 										copyIntent.putExtra(
 												AddFitnesActivity.FITNES_WEY,
@@ -376,6 +364,7 @@ public class DishActivity extends BaseActivity {
 	}
 
 	IabHelper mHelper;
+	private Button chartButton;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -390,6 +379,24 @@ public class DishActivity extends BaseActivity {
 		Bundle extras = getIntent().getExtras();
 		View viewToLoad = LayoutInflater.from(this.getParent()).inflate(
 				R.layout.today_list, null);
+		chartButton = (Button) viewToLoad.findViewById(R.id.buttonChart);
+		chartButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent();
+				intent.setClass(getParent(), StatisticFCPActivity.class);
+				if (CalendarActivityGroup.class.toString().equals(parentName)) {
+					CalendarActivityGroup activityStack = (CalendarActivityGroup) getParent();
+					activityStack.push("StatisticFCPActivity", intent);
+				} else {
+					DishActivityGroup activityStack = (DishActivityGroup) getParent();
+					activityStack.push("StatisticFCPActivity", intent);
+				}
+				
+			}
+		});
+		
 		header = (TextView) viewToLoad.findViewById(R.id.textViewTitle);
 		Button exitButton = (Button) viewToLoad.findViewById(R.id.buttonExit);
 		exitButton.setOnClickListener(new OnClickListener() {
@@ -590,8 +597,7 @@ public class DishActivity extends BaseActivity {
 		
 		/*if (c.getCount() > 0) {
 			c.moveToFirst();
-			if (c.getString(c
-					.getColumnIndex(DishProvider.TODAY_DISH_CALORICITY)) != null) {
+			if (c.getString(c.getColumnIndex(DishProvider.TODAY_DISH_CALORICITY)) != null) {
 				int val = Integer.parseInt(c.getString(c
 						.getColumnIndex(DishProvider.TODAY_DISH_CALORICITY)));
 				if (val > 0) {
@@ -620,8 +626,8 @@ public class DishActivity extends BaseActivity {
 				} else {
 					sumLoose = sumLoose + val;
 				}
-				if (!c.getString(c.getColumnIndex(DishProvider.TODAY_CATEGORY))
-						.equals("0")) {
+
+				if (val >= 0) {
 					sumF = sumF
 							+ c.getFloat(c
 									.getColumnIndex(DishProvider.TODAY_DISH_FAT));

@@ -7,9 +7,11 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -18,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import bulat.diet.helper_sport.R;
+import bulat.diet.helper_sport.utils.CustomAlertDialogBuilder;
 import bulat.diet.helper_sport.utils.SaveUtils;
 
 public class SelectStatisticsActivity extends Activity {
@@ -98,13 +101,54 @@ public class SelectStatisticsActivity extends Activity {
 		});
 		Date currDate = new Date();
 		if(currDate.getTime()>SaveUtils.getEndPDate(this)){
-			AlertDialog.Builder builder = new AlertDialog.Builder(
+/*			AlertDialog.Builder builder = new AlertDialog.Builder(
 					this.getParent().getParent());			
 			builder.setMessage(R.string.payment_dialog_alert);
 			
-			builder.setPositiveButton(getString(R.string.yes),
-							dialogClickListener).show();
-					
+			builder.setPositiveButton(getString(R.string.ok),
+							dialogClickListener);
+			builder.setNegativeButton(getString(R.string.get_free_time),
+					new OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {				
+						}
+					}).show();*/
+			
+			CustomAlertDialogBuilder bld = new CustomAlertDialogBuilder(SelectStatisticsActivity.this.getParent().getParent());
+			bld.setLayout(R.layout.section_alert_dialog_two_buttons)
+			.setMessage(SelectStatisticsActivity.this.getParent().getString(R.string.payment_dialog_alert))		
+			.setPositiveButton(R.id.dialogButtonOk, new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					try {
+						Intent intent = new Intent();
+						intent.setClass(getParent(), PaymentsListActivity.class);
+						StatisticActivityGroup activityStack = (StatisticActivityGroup) getParent();
+						activityStack.push("StatisticActivity", intent);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+			bld.setPositiveButtonText(R.string.ok)
+			.setNegativeButton(R.id.dialogButtonCancel, new OnClickListener() {
+				@Override
+				public void onClick(View v) {	
+					if(!SaveUtils.isUseFreeAbonement(getApplicationContext())){
+						try {
+							Intent intent = new Intent();
+							intent.setClass(getParent().getParent(), FreeAbonementActivity.class);
+							startActivity(intent);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			})
+			.setNegativeButtonText(R.string.get_free_time);
+			bld.show();		
 		}	
 	
 	}

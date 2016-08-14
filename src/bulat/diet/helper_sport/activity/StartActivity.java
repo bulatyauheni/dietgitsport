@@ -81,12 +81,12 @@ public class StartActivity extends BasePayActivity{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		DietHelperActivity.dayscount = TodayDishHelper.getDaysCount(this);
-				
+		
 		if(SaveUtils.getEndPDate(this) == 0){
 			Date currDate = new Date();
 			SaveUtils.setEndPDate(currDate.getTime() + 7 * DateUtils.DAY_IN_MILLIS, this);
 		}
-
+		
 		// Create the helper, passing it our context and the public key to verify signatures with      
 		   
 		super.onCreate(savedInstanceState);
@@ -154,7 +154,7 @@ public class StartActivity extends BasePayActivity{
 	}
 	
 	 private void createNotifications() {
-
+		 NotificationDishHelper.clearAll(this);
 		 String name = null;
 		 int enabled = 1;
 		 String defName = getString(R.string.time_def);

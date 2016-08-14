@@ -3,12 +3,24 @@ package bulat.diet.helper_sport.adapter;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+
+import com.github.mikephil.charting.animation.Easing;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.Legend.LegendPosition;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.github.mikephil.charting.utils.ColorTemplate;
 
 import android.app.Dialog;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -42,9 +54,12 @@ public class DaysAdapter extends CursorAdapter {
 	int age = 0;
 	int sex = 0;
 	int activity = 0;
+	private String[] mParties;
+	
 	public DaysAdapter(CalendarActivity page, Context context, Cursor c,
 			CalendarActivityGroup calendarActivityGroup) {
 		super(context, c);
+		mParties = new String[] { "","","" };
 		this.page = page;
 		ctx = context;
 		height = SaveUtils.getHeight(ctx) + Info.MIN_HEIGHT;
@@ -141,13 +156,15 @@ public class DaysAdapter extends CursorAdapter {
 			TextView tvProtPercent = (TextView) v
 					.findViewById(R.id.textViewProteinPercent);
 			
-			float sum = Float.valueOf(c.getString(c.getColumnIndex("protein"))==null?"0":c.getString(c.getColumnIndex("protein"))) + 
-					Float.valueOf(c.getString(c.getColumnIndex("carbon"))==null?"0":c.getString(c.getColumnIndex("carbon")))+
-					Float.valueOf(c.getString(c.getColumnIndex("fat"))==null?"0":c.getString(c.getColumnIndex("fat")));
+			float protein=  Float.valueOf(c.getString(c.getColumnIndex("protein"))==null?"0":c.getString(c.getColumnIndex("protein")));
+			float fat=  Float.valueOf(c.getString(c.getColumnIndex("fat"))==null?"0":c.getString(c.getColumnIndex("fat")));
+			float carbon=  Float.valueOf(c.getString(c.getColumnIndex("carbon"))==null?"0":c.getString(c.getColumnIndex("carbon")));
 			
-			tvFatPercent.setText("("+df.format(Float.valueOf(c.getString(c.getColumnIndex("fat"))==null?"0":c.getString(c.getColumnIndex("fat")))*100/sum)+"%)");
-			tvCarbPercent.setText("("+df.format(Float.valueOf(c.getString(c.getColumnIndex("carbon"))==null?"0":c.getString(c.getColumnIndex("carbon")))*100/sum)+"%)");
-			tvProtPercent.setText("("+df.format(Float.valueOf(c.getString(c.getColumnIndex("protein"))==null?"0":c.getString(c.getColumnIndex("protein")))*100/sum)+"%)");
+			float sum = protein + fat+ carbon;
+			
+			tvFatPercent.setText("("+df.format(fat*100/sum)+"%)");
+			tvCarbPercent.setText("("+df.format(carbon*100/sum)+"%)");
+			tvProtPercent.setText("("+df.format(protein*100/sum)+"%)");
 			
 			
 			TextView waterweightView = (TextView)v.findViewById(R.id.textViewWoter);
@@ -165,6 +182,8 @@ public class DaysAdapter extends CursorAdapter {
 
 			TextView bodyweightView = (TextView) v
 					.findViewById(R.id.textViewWeightBodyTotal);
+			
+			
 
 			float currWeight = SaveUtils.getRealWeight(ctx);
 
@@ -173,8 +192,21 @@ public class DaysAdapter extends CursorAdapter {
 			}
 			bodyweightView.setText(itemBodyWeight + " "
 					+ context.getString(R.string.kgram));
+			
+			/*String health = c.getString(c
+					.getColumnIndex(DishProvider.TODAY_DISH_SERVER_ID));
+			Button buttonHelth = (Button) v
+					.findViewById(R.id.buttonHelth);
+			if (health == null) {
+				buttonHelth.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.fine));
+			}*/
+		//	buttonHelth.setOnClickListener(l);
+			
 		}
-
+		
+		
+		
+		
 		Button weightButton = (Button) v.findViewById(R.id.buttonWeight);
 		if (weightButton != null) {
 			weightButton.setId(c.getInt(c.getColumnIndex("_id")));
@@ -336,6 +368,8 @@ public class DaysAdapter extends CursorAdapter {
 		}
 
 	}
+
+	
 	public int checkLimit(int sum, float bodyweight){
 		int BMR = getBMR(bodyweight);
 		int META = getMeta(bodyweight);

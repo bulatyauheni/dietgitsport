@@ -31,6 +31,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -53,6 +54,7 @@ import android.widget.Toast;
 import bulat.diet.helper_sport.R;
 import bulat.diet.helper_sport.item.Purchase;
 import bulat.diet.helper_sport.utils.Constants;
+import bulat.diet.helper_sport.utils.CustomAlertDialogBuilder;
 import bulat.diet.helper_sport.utils.IabHelper;
 import bulat.diet.helper_sport.utils.IabResult;
 import bulat.diet.helper_sport.utils.NetworkState;
@@ -117,7 +119,7 @@ public class PaymentsListActivity extends BasePayActivity {
 	protected void onResume() {
 		super.onResume();
 		String[] list = { getString(R.string.paymentvipy), getString(R.string.paymenty), getString(R.string.paymenthy),
-				getString(R.string.paymentm), getString(R.string.paymentspec) };
+				getString(R.string.paymentm), getString(R.string.paymentspec), getString(R.string.paymenterror) };
 
 		ListView listView = (ListView) findViewById(R.id.listViewStatistics);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
@@ -160,11 +162,38 @@ public class PaymentsListActivity extends BasePayActivity {
 					builder.setMessage(R.string.payment_dialog_month);
 				if (arg2 == 4)
 					PaymentsListActivity.this.showDialog(DIALOG_EMAIL);
-				else
+				if (arg2 == 5) {
+					CustomAlertDialogBuilder bld = new CustomAlertDialogBuilder(PaymentsListActivity.this.getParent().getParent());
+					bld.setLayout(R.layout.section_alert_dialog_two_buttons)
+					.setMessage(PaymentsListActivity.this.getParent().getString(R.string.complain_for_payment))			
+					.setPositiveButton(R.id.dialogButtonOk, new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+						            "mailto","bulat.yauheni@gmail.com", null));
+							emailIntent.putExtra(Intent.EXTRA_SUBJECT, PaymentsListActivity.this.getParent().getString(R.string.app_name));
+							emailIntent.putExtra(Intent.EXTRA_TEXT, "");
+							PaymentsListActivity.this.getParent().getParent().startActivity((Intent.createChooser(emailIntent, "Send email...")));
+						}
+					})
+					.setPositiveButtonText(R.string.agree)
+					.setNegativeButton(R.id.dialogButtonCancel, new OnClickListener() {
+	
+						@Override
+						public void onClick(View v) {
+							// TODO Auto-generated method stub
+							
+						}
+					})
+					.setNegativeButtonText(R.string.disagree);
+					bld.show();
+				} else {
 					builder.setPositiveButton(getString(R.string.yes),
 							dialogClickListener)
 							.setNegativeButton(getString(R.string.no),
 									dialogClickListener).show();
+				}
 
 			}
 		});
